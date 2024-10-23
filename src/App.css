@@ -36,3 +36,35 @@
     transform: rotate(360deg);
   }
 }
+
+.Container {
+  margin: 100px 0 0px 0px;
+  padding: 0 5% 0 5%;
+  width: 70%;
+  height: 350px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  transition: all ease-in-out 0.5s;
+}
+
+.Container img {
+  width: 10%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 2px solid rgba(255, 255, 255, 0.684);
+  transition: all ease-in-out 0.5s;
+
+  pointer-events: auto;
+}
+
+.Container:has(img:hover) {
+  padding: 0 0 0 0;
+}
+
+.Container img:hover {
+  width: 25%
+}
+

@@ -2,6 +2,8 @@ import { useState, useEffect, useReducer } from "react";
 import { APIReadKey } from "./keys";
 import Accordion from "react-bootstrap/Accordion";
 import Container from "react-bootstrap/Container";
+import Col from "react-bootstrap/Col";
+import Row from "react-bootstrap/Row";
 
 var authorization = { Authorization: `Bearer ${APIReadKey}` };
 
@@ -165,9 +167,8 @@ export default function FindContent({ searchForm }) {
               }}
             >
               {itemArray.map((item, index2) => (
-                <div>
+                <div onClick={() => selectContent(item)}>
                   <img
-                    onClick={() => selectContent(item)}
                     key={item.id}
                     src={photosUrl + item.posterPath}
                     alt={item.title}
@@ -181,18 +182,15 @@ export default function FindContent({ searchForm }) {
           </Accordion.Item>
         ))}
       </Accordion>
-      <Container>
-        {selectedContent.map((item, index) => (
-          <div>
-            <img
-              key={item.id}
-              src={photosUrl + item.posterPath}
-              alt={item.title}
-            />
-            <p>{item.title}</p>
-          </div>
+      <div className="Container">
+        {selectedContent.map((item, index, array) => (
+          <img
+            key={item.id}
+            src={photosUrl + item.posterPath}
+            alt={item.title}
+          />
         ))}
-      </Container>
+      </div>
     </>
   );
 }
