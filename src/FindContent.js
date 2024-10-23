@@ -1,11 +1,11 @@
 import { useState, useEffect, useReducer } from "react";
 import { APIReadKey } from "./keys";
 import Accordion from "react-bootstrap/Accordion";
+import Container from "react-bootstrap/Container";
 
 var authorization = { Authorization: `Bearer ${APIReadKey}` };
 
 function foundItemsReducer(shows, action) {
-  console.log("REDUCER IS RUNNING");
   switch (action.type) {
     case "added":
       return [
@@ -14,6 +14,7 @@ function foundItemsReducer(shows, action) {
           id: action.id,
           title: action.title,
           posterPath: action.posterPath,
+          //searchTerm: action.searchTerm,
         },
       ];
     case "addToLastArray":
@@ -26,6 +27,7 @@ function foundItemsReducer(shows, action) {
             id: action.id,
             title: action.title,
             posterPath: action.posterPath,
+            //searchTerm: action.searchTerm,
           },
         ],
       ];
@@ -40,12 +42,7 @@ function foundItemsReducer(shows, action) {
 function selectedContentReducer(selectedContent, action) {
   switch (action.type) {
     case "added":
-      return [
-        ...selectedContent,
-        {
-          item: action.item,
-        },
-      ];
+      return [...selectedContent, action.item];
     default: {
       throw Error("Unknown Action");
     }
@@ -60,6 +57,7 @@ export default function FindContent({ searchForm }) {
     selectedContentReducer,
     []
   );
+  const [searchedTerms, setSearchedTerms] = useState([]);
 
   var searchTerm = searchForm[0];
   var filmOrSeries = searchForm[1];
@@ -72,6 +70,7 @@ export default function FindContent({ searchForm }) {
       id: id,
       title: title,
       posterPath: posterPath,
+      //searchTerm: searchTerm,
     });
   }
 
@@ -87,6 +86,7 @@ export default function FindContent({ searchForm }) {
       id: id,
       title: title,
       posterPath: posterPath,
+      //searchTerm: searchTerm,
     });
   }
 
@@ -127,6 +127,8 @@ export default function FindContent({ searchForm }) {
 
     //fetch query, wait for promise to reutrn & convert to Json, wait for that, then do what I want w/ it
     var search_url = `https://api.themoviedb.org/3/search/${filmOrSeries}?query=${searchTerm}&include_adult=${safeSearch}`;
+    setSearchedTerms([...searchedTerms, searchTerm]);
+
     fetch(search_url, {
       method: "GET",
       headers: authorization,
@@ -140,40 +142,57 @@ export default function FindContent({ searchForm }) {
           //Eventually have user select the film they want rather than assuming its just the top result
           //Put the new details in lists of IDs & Title
           //Send values to dispatch
+          console.log(searchTerm);
           addContentToLastArray(id, title, posterPath);
         });
       });
   }, [searchForm]);
 
   return (
-    <Accordion alwaysOpen>
-      {foundItems.map((itemArray, index) => (
-        <Accordion.Item
-          eventKey={index}
-          style={{
-            width: "80vw",
-            gap: "1vw",
-            display: "flex",
-            flexDirection: "row",
-            overflowX: "auto",
-          }}
-        >
-          <Accordion.Header>{index}</Accordion.Header>
-          {itemArray.map((item, index2) => (
-            <Accordion.Body key={`${index}${index2}`}>
-              <img
-                onClick={() => selectContent(item)}
-                key={item.id}
-                src={photosUrl + item.posterPath}
-                alt={item.title}
-                //width={100}
-                //looks @ css flexbox/ padding/ margin for spacing
-              />
-              <p>{item.title}</p>
+    <>
+      <Accordion alwaysOpen style={{ width: "80vw" }}>
+        {foundItems.map((itemArray, index) => (
+          <Accordion.Item key={index} eventKey={index}>
+            <Accordion.Header>{searchedTerms[index]}</Accordion.Header>
+            <Accordion.Body
+              key={`${index}`}
+              style={{
+                width: "80vw",
+                gap: "1vw",
+                display: "flex",
+                flexDirection: "row",
+                overflowX: "auto",
+              }}
+            >
+              {itemArray.map((item, index2) => (
+                <div>
+                  <img
+                    onClick={() => selectContent(item)}
+                    key={item.id}
+                    src={photosUrl + item.posterPath}
+                    alt={item.title}
+                    //width={100}
+                    //looks @ css flexbox/ padding/ margin for spacing
+                  />
+                  <p>{item.title}</p>
+                </div>
+              ))}
             </Accordion.Body>
-          ))}
-        </Accordion.Item>
-      ))}
-    </Accordion>
+          </Accordion.Item>
+        ))}
+      </Accordion>
+      <Container>
+        {selectedContent.map((item, index) => (
+          <div>
+            <img
+              key={item.id}
+              src={photosUrl + item.posterPath}
+              alt={item.title}
+            />
+            <p>{item.title}</p>
+          </div>
+        ))}
+      </Container>
+    </>
   );
 }

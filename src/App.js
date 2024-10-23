@@ -9,7 +9,7 @@ function App() {
   const [keyTerms, setKeyTerms] = useState("");
   const [filmOrSeries, setFilmOrSeries] = useState("tv");
   const [country, setCountry] = useState("GB");
-  const [safeSearch, setSafeSearch] = useState(true);
+  const [safeSearch, setSafeSearch] = useState(false);
   const [search, setSearch] = useState([null, null, null, null]);
 
   function handleSubmit(e) {
@@ -62,9 +62,7 @@ function App() {
           href="https://reactjs.org"
           target="_blank"
           rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        ></a>
       </header>
     </div>
   );
