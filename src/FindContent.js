@@ -16,7 +16,6 @@ function foundItemsReducer(shows, action) {
           id: action.id,
           title: action.title,
           posterPath: action.posterPath,
-          //searchTerm: action.searchTerm,
         },
       ];
     case "addToLastArray":
@@ -29,7 +28,6 @@ function foundItemsReducer(shows, action) {
             id: action.id,
             title: action.title,
             posterPath: action.posterPath,
-            //searchTerm: action.searchTerm,
           },
         ],
       ];
@@ -66,13 +64,19 @@ export default function FindContent({ searchForm }) {
   var country = searchForm[2];
   var safeSearch = searchForm[3];
 
+  //Divide selectedContent into batches of 7 for the rendering to look pretty
+  var sevensOfSelected = [];
+  for (var i = 0; i < selectedContent.length; i += 7) {
+    var batchOfSeven = selectedContent.slice(i, i + 7);
+    sevensOfSelected.push(batchOfSeven);
+  }
+
   function addContent(id, title, posterPath) {
     dispatchFoundItems({
       type: "added",
       id: id,
       title: title,
       posterPath: posterPath,
-      //searchTerm: searchTerm,
     });
   }
 
@@ -88,7 +92,6 @@ export default function FindContent({ searchForm }) {
       id: id,
       title: title,
       posterPath: posterPath,
-      //searchTerm: searchTerm,
     });
   }
 
@@ -182,13 +185,19 @@ export default function FindContent({ searchForm }) {
           </Accordion.Item>
         ))}
       </Accordion>
-      <div className="Container">
-        {selectedContent.map((item, index, array) => (
-          <img
-            key={item.id}
-            src={photosUrl + item.posterPath}
-            alt={item.title}
-          />
+      <div className="Container-Container">
+        <p></p>
+        <h1>Selected Content</h1>
+        {sevensOfSelected.map((batch) => (
+          <div className="Container">
+            {batch.map((item) => (
+              <img
+                key={item.id}
+                src={photosUrl + item.posterPath}
+                alt={item.title}
+              />
+            ))}
+          </div>
         ))}
       </div>
     </>
