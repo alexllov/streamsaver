@@ -7,6 +7,7 @@ import Row from "react-bootstrap/Row";
 
 var authorization = { Authorization: `Bearer ${APIReadKey}` };
 
+//Control the content of foundItems.
 function foundItemsReducer(shows, action) {
   switch (action.type) {
     case "added":
@@ -16,8 +17,10 @@ function foundItemsReducer(shows, action) {
           id: action.id,
           title: action.title,
           posterPath: action.posterPath,
+          visible: true,
         },
       ];
+    //Add newly found content into the last array in foundItems (for accordion).
     case "addToLastArray":
       var lastArray = shows[shows.length - 1];
       return [
@@ -28,17 +31,28 @@ function foundItemsReducer(shows, action) {
             id: action.id,
             title: action.title,
             posterPath: action.posterPath,
+            visible: true,
           },
         ],
       ];
+    //Spread shows, add new array to end, for next section of accordion.
     case "addArray":
       return [...shows, []];
+    //Change item's visibility to 'false'
+    //case "hideItem":
+    //  for (var array in shows) {
+    //    for (var item in array) {
+    //
+    //    }
+    //  }
+    //  return [];
     default: {
       throw Error("Unknown Action");
     }
   }
 }
 
+//Control the content in selectedContent.
 function selectedContentReducer(selectedContent, action) {
   switch (action.type) {
     case "added":
@@ -49,15 +63,49 @@ function selectedContentReducer(selectedContent, action) {
   }
 }
 
+//Control the items that are 'Hidden' from search draws, ie content that has been selected.
+function hiddentItemIdsReducer(hiddenItemIds, action) {
+  switch (action.type) {
+    case "added":
+      return [...hiddenItemIds, action.id];
+    default: {
+      throw Error("Unknown Action");
+    }
+  }
+}
+
+//Control the items that are shown in search draws, ie content that has been selected.
+//function shownSearchResultsReducer(shownSearchResults, action, foundItems) {
+//  switch (action.type) {
+//    case "removed":
+//      console.log(action.id);
+//      return [...shownSearchResults, action.id];
+//    default: {
+//      throw Error("Unknown Action");
+//    }
+//  }
+//}
+
 export default function FindContent({ searchForm }) {
-  //useReducer
+  //useReducer to track hiddenContent
+  //Content returned from API after form search
   const [foundItems, dispatchFoundItems] = useReducer(foundItemsReducer, []);
+  //Url for photos from API call
   const [photosUrl, setphotosUrl] = useState("");
+  //Content user has clicked from accordion to add to wanted content
   const [selectedContent, dispatchSelectContent] = useReducer(
     selectedContentReducer,
     []
   );
+  //Stores search terms used by the user to name accordion sections
   const [searchedTerms, setSearchedTerms] = useState([]);
+  //Stores the IDs of items that have been selected in order to work out hiding them
+  const [hiddenItemIds, dispatchHiddenItemIds] = useReducer(
+    hiddentItemIdsReducer,
+    []
+  );
+  //Stores all foundItems that are not in hiddenItemIds, so that order can be preserved in foundItems
+  //const [shownSearchResults, dispatchShownSearchResults] = useReducer(shownSearchResultsReducer, []);
 
   var searchTerm = searchForm[0];
   var filmOrSeries = searchForm[1];
@@ -71,14 +119,14 @@ export default function FindContent({ searchForm }) {
     sevensOfSelected.push(batchOfSeven);
   }
 
-  function addContent(id, title, posterPath) {
-    dispatchFoundItems({
-      type: "added",
-      id: id,
-      title: title,
-      posterPath: posterPath,
-    });
-  }
+  //  function addContent(id, title, posterPath) {
+  //    dispatchFoundItems({
+  //      type: "added",
+  //      id: id,
+  //      title: title,
+  //      posterPath: posterPath,
+  //    });
+  //  }
 
   function addNewContentArray() {
     dispatchFoundItems({
@@ -101,7 +149,27 @@ export default function FindContent({ searchForm }) {
       type: "added",
       item: item,
     });
+    dispatchHiddenItemIds({
+      type: "added",
+      id: item.id,
+    });
   }
+
+  //Check if content is visible: iterate through the IDs in hiddenItemIds to look for a match.
+  function isVisible(id, hiddenItemIds) {
+    var visible = true;
+    hiddenItemIds.forEach((item) => {
+      if (item == id) {
+        console.log("Found item that's hidden");
+        visible = false;
+      }
+    });
+    return visible;
+  }
+
+  var list = [1];
+  var testVal = 11;
+  console.log(isVisible(testVal, list));
 
   useEffect(() => {
     //Get img pathway config details
@@ -122,15 +190,17 @@ export default function FindContent({ searchForm }) {
   }, []);
 
   useEffect(() => {
+    //Catch if form is empy to prevent API call error.
     if (searchTerm === null) {
       return;
     }
 
-    //Make Accordion, create new layer here before searches
-    //Search Results stored as 2D array
+    //Make Accordion, create new layer here before searches.
+    //Search Results stored as 2D array.
     addNewContentArray();
 
-    //fetch query, wait for promise to reutrn & convert to Json, wait for that, then do what I want w/ it
+    //fetch query, wait for promise to reutrn & convert to Json, wait for that, then do what I want w/ it.
+    //For each result returned, record id, title & posterPath.
     var search_url = `https://api.themoviedb.org/3/search/${filmOrSeries}?query=${searchTerm}&include_adult=${safeSearch}`;
     setSearchedTerms([...searchedTerms, searchTerm]);
 
@@ -144,10 +214,6 @@ export default function FindContent({ searchForm }) {
           var id = result.id;
           var title = result.name ? result.name : result.title;
           var posterPath = result.poster_path;
-          //Eventually have user select the film they want rather than assuming its just the top result
-          //Put the new details in lists of IDs & Title
-          //Send values to dispatch
-          console.log(searchTerm);
           addContentToLastArray(id, title, posterPath);
         });
       });
@@ -169,18 +235,21 @@ export default function FindContent({ searchForm }) {
                 overflowX: "auto",
               }}
             >
-              {itemArray.map((item, index2) => (
-                <div onClick={() => selectContent(item)}>
-                  <img
-                    key={item.id}
-                    src={photosUrl + item.posterPath}
-                    alt={item.title}
-                    //width={100}
-                    //looks @ css flexbox/ padding/ margin for spacing
-                  />
-                  <p>{item.title}</p>
-                </div>
-              ))}
+              {itemArray.map(
+                (item, index2) =>
+                  isVisible(item.id, hiddenItemIds) && (
+                    <div onClick={() => selectContent(item)}>
+                      <img
+                        key={item.id}
+                        src={photosUrl + item.posterPath}
+                        alt={item.title}
+                        //width={100}
+                        //looks @ css flexbox/ padding/ margin for spacing
+                      />
+                      <p>{item.title}</p>
+                    </div>
+                  )
+              )}
             </Accordion.Body>
           </Accordion.Item>
         ))}
