@@ -38,18 +38,19 @@ function foundItemsReducer(shows, action) {
     //Spread shows, add new array to end, for next section of accordion.
     case "addArray":
       return [...shows, []];
-    //Change item's visibility to 'false'
-    //case "hideItem":
-    //  for (var array in shows) {
-    //    for (var item in array) {
-    //
-    //    }
-    //  }
-    //  return [];
     default: {
       throw Error("Unknown Action");
     }
   }
+}
+
+////Find index of element, splice array around it & return new array
+function removeElement(element, array) {
+  const index = array.indexOf(element);
+  if (index > -1) {
+    array.splice(index, 1);
+  }
+  return [...array];
 }
 
 //Control the content in selectedContent.
@@ -58,12 +59,7 @@ function selectedContentReducer(selectedContent, action) {
     case "added":
       return [...selectedContent, action.item];
     case "removed":
-      //Find index of action.item, splice array around it & return
-      const index = selectedContent.indexOf(action.item);
-      if (index > -1) {
-        selectedContent.splice(index, 1);
-      }
-      return [...selectedContent];
+      return removeElement(action.item, selectedContent);
     default: {
       throw Error("Unknown Action");
     }
@@ -76,30 +72,12 @@ function hiddentItemIdsReducer(hiddenItemIds, action) {
     case "added":
       return [...hiddenItemIds, action.id];
     case "removed":
-      const index = hiddenItemIds.indexOf(action.id);
-      if (index > -1) {
-        console.log(hiddenItemIds);
-        hiddenItemIds.splice(index, 1);
-        console.log(hiddenItemIds);
-      }
-      return [...hiddenItemIds];
+      return removeElement(action.id, hiddenItemIds);
     default: {
       throw Error("Unknown Action");
     }
   }
 }
-
-//Control the items that are shown in search draws, ie content that has been selected.
-//function shownSearchResultsReducer(shownSearchResults, action, foundItems) {
-//  switch (action.type) {
-//    case "removed":
-//      console.log(action.id);
-//      return [...shownSearchResults, action.id];
-//    default: {
-//      throw Error("Unknown Action");
-//    }
-//  }
-//}
 
 export default function FindContent({ searchForm }) {
   //useReducer to track hiddenContent
@@ -160,7 +138,6 @@ export default function FindContent({ searchForm }) {
 
   //Take user click -> add item to selected content & hidden ids
   function selectContent(item) {
-    console.log("You clicked on", item.title);
     dispatchSelectContent({
       type: "added",
       item: item,
@@ -171,7 +148,7 @@ export default function FindContent({ searchForm }) {
     });
   }
 
-  //Take user click -> remove item from selected content & hidden ids
+  //Take user click -> remove item from selected content & hidden ids.
   function removeContent(item) {
     dispatchSelectContent({
       type: "removed",
@@ -188,16 +165,11 @@ export default function FindContent({ searchForm }) {
     var visible = true;
     hiddenItemIds.forEach((item) => {
       if (item == id) {
-        console.log("Found item that's hidden");
         visible = false;
       }
     });
     return visible;
   }
-
-  var list = [1];
-  var testVal = 11;
-  console.log(isVisible(testVal, list));
 
   useEffect(() => {
     //Get img pathway config details
@@ -214,7 +186,6 @@ export default function FindContent({ searchForm }) {
         setphotosUrl(`${baseUrl}${pixelSize}`);
       })
       .catch((err) => console.error(err));
-    console.log("CONSOLE LOG OF CONFIGURL VAR", photosUrl);
   }, []);
 
   useEffect(() => {
@@ -223,8 +194,7 @@ export default function FindContent({ searchForm }) {
       return;
     }
 
-    //Make Accordion, create new layer here before searches.
-    //Search Results stored as 2D array.
+    //Search Results stored as 2D array so that they display in the accordion.
     addNewContentArray();
 
     //fetch query, wait for promise to reutrn & convert to Json, wait for that, then do what I want w/ it.
@@ -242,6 +212,11 @@ export default function FindContent({ searchForm }) {
           var id = result.id;
           var title = result.name ? result.name : result.title;
           var posterPath = result.poster_path;
+          //if ("title" in result) {
+          //  var contentType = "movie";
+          //} else {
+          //  var contentType = "tv";
+          //}
           addContentToLastArray(id, title, posterPath);
         });
       });
