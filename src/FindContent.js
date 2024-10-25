@@ -57,6 +57,13 @@ function selectedContentReducer(selectedContent, action) {
   switch (action.type) {
     case "added":
       return [...selectedContent, action.item];
+    case "removed":
+      //Find index of action.item, splice array around it & return
+      const index = selectedContent.indexOf(action.item);
+      if (index > -1) {
+        selectedContent.splice(index, 1);
+      }
+      return [...selectedContent];
     default: {
       throw Error("Unknown Action");
     }
@@ -68,6 +75,14 @@ function hiddentItemIdsReducer(hiddenItemIds, action) {
   switch (action.type) {
     case "added":
       return [...hiddenItemIds, action.id];
+    case "removed":
+      const index = hiddenItemIds.indexOf(action.id);
+      if (index > -1) {
+        console.log(hiddenItemIds);
+        hiddenItemIds.splice(index, 1);
+        console.log(hiddenItemIds);
+      }
+      return [...hiddenItemIds];
     default: {
       throw Error("Unknown Action");
     }
@@ -143,6 +158,7 @@ export default function FindContent({ searchForm }) {
     });
   }
 
+  //Take user click -> add item to selected content & hidden ids
   function selectContent(item) {
     console.log("You clicked on", item.title);
     dispatchSelectContent({
@@ -151,6 +167,18 @@ export default function FindContent({ searchForm }) {
     });
     dispatchHiddenItemIds({
       type: "added",
+      id: item.id,
+    });
+  }
+
+  //Take user click -> remove item from selected content & hidden ids
+  function removeContent(item) {
+    dispatchSelectContent({
+      type: "removed",
+      item: item,
+    });
+    dispatchHiddenItemIds({
+      type: "removed",
       id: item.id,
     });
   }
@@ -264,6 +292,7 @@ export default function FindContent({ searchForm }) {
                 key={item.id}
                 src={photosUrl + item.posterPath}
                 alt={item.title}
+                onClick={() => removeContent(item)}
               />
             ))}
           </div>
