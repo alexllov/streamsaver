@@ -65,3 +65,78 @@
   width: 25%
 }
 
+.input-group {
+  display: flex;
+  align-items: center;
+}
+
+.input {
+  min-height: 80px;
+  width: 500px;
+  padding: 0 1rem;
+  color: #fff;
+  font-size: 30px;
+  border: 1px solid #5e4dcd;
+  border-radius: 0.5rem;
+  background-color: transparent;
+}
+
+.button--submit {
+  min-height: 50px;
+  padding: .5em 1em;
+  border: none;
+  border-radius: 0 6px 6px 0;
+  background-color: #5e4dcd;
+  color: #fff;
+  font-size: 35px;
+  cursor: pointer;
+  transition: background-color .3s ease-in-out;
+}
+
+.button--submit:hover {
+  background-color: #5e5dcd;
+}
+
+.input:focus, .input:focus-visible {
+  border-color: #3898EC;
+  outline: none;
+}
+
+.radio-inputs {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  border-radius: 0.5rem;
+  background-color: #282c34;
+  box-sizing: border-box;
+  box-shadow: 0 0 0px 1px #5e5dcd;
+  padding: 0.25rem;
+  width: 500px;
+  font-size: 14px;
+}
+
+.radio-inputs .radio {
+  flex: 1 1 auto;
+  text-align: center;
+}
+
+.radio-inputs .radio input {
+  display: none;
+}
+
+.radio-inputs .radio .name {
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  border: none;
+  padding: .5rem 0;
+  color: #fff;
+  transition: all .15s ease-in-out;
+}
+
+.radio-inputs .radio input:checked + .name {
+  background-color: #5e5dcd;
+  font-weight: 600;
+}

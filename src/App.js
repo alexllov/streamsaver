@@ -23,37 +23,43 @@ function App() {
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
         <form id="showSearchForm" onSubmit={handleSubmit}>
-          <input
-            type="text"
-            id="searchTitle"
-            name="searchTitle"
-            value={keyTerms}
-            onChange={(e) => setKeyTerms(e.target.value)}
-          />
-          <br />
-          <input
-            type="radio"
-            id="series"
-            name="filmSeriesRadio"
-            value="tv"
-            defaultChecked
-            onClick={(e) => setFilmOrSeries(e.target.value)}
-          />
-          <label htmlFor="series">Series</label>
-          <input
-            type="radio"
-            id="film"
-            name="filmSeriesRadio"
-            value="movie"
-            onClick={(e) => setFilmOrSeries(e.target.value)}
-          />
-          <label htmlFor="film">Film</label>
-          <br />
-          <input type="submit" value="Submit"></input>
+          <div class="input-group">
+            <input
+              type="text"
+              class="input"
+              id="searchTitle"
+              name="searchTitle"
+              placeholder="Search for Content..."
+              autocomplete="off"
+              value={keyTerms}
+              onChange={(e) => setKeyTerms(e.target.value)}
+            />
+            <input class="button--submit" value="Seach" type="submit" />
+          </div>
+          <div class="radio-inputs">
+            <label class="radio" htmlFor="series">
+              <input
+                type="radio"
+                id="series"
+                name="filmSeriesRadio"
+                value="tv"
+                defaultChecked
+                onClick={(e) => setFilmOrSeries(e.target.value)}
+              />
+              <span class="name">SERIES</span>
+            </label>
+            <label class="radio" htmlFor="film">
+              <input
+                type="radio"
+                id="film"
+                name="filmSeriesRadio"
+                value="movie"
+                onClick={(e) => setFilmOrSeries(e.target.value)}
+              />
+              <span class="name">FILM</span>
+            </label>
+          </div>
         </form>
         <script src="FindFilmReducer"></script>
         <FindContent searchForm={search} />
