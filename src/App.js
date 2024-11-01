@@ -6,6 +6,8 @@ import FindContent from "./FindContent";
 
 function App() {
   // javascript stuff goes here  :)
+  // Country should probably be stored as a separate drop-down & sent to FindStreamingOptions directly,
+  //   its not actually needsd in FindContent, so making it part of the form only complicates things
   const [keyTerms, setKeyTerms] = useState("");
   const [filmOrSeries, setFilmOrSeries] = useState("tv");
   const [country, setCountry] = useState("GB");

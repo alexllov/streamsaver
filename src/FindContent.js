@@ -4,6 +4,8 @@ import Accordion from "react-bootstrap/Accordion";
 import Container from "react-bootstrap/Container";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
+import findStreamingOptions from "./FindStreamingOptions";
+import FindStreamingOptions from "./FindStreamingOptions";
 
 var authorization = { Authorization: `Bearer ${APIReadKey}` };
 
@@ -17,7 +19,7 @@ function foundItemsReducer(shows, action) {
           id: action.id,
           title: action.title,
           posterPath: action.posterPath,
-          visible: true,
+          contentType: action.contentType,
         },
       ];
     //Add newly found content into the last array in foundItems (for accordion).
@@ -31,7 +33,7 @@ function foundItemsReducer(shows, action) {
             id: action.id,
             title: action.title,
             posterPath: action.posterPath,
-            visible: true,
+            contentType: action.contentType,
           },
         ],
       ];
@@ -97,13 +99,12 @@ export default function FindContent({ searchForm }) {
     hiddentItemIdsReducer,
     []
   );
-  //Stores all foundItems that are not in hiddenItemIds, so that order can be preserved in foundItems
-  //const [shownSearchResults, dispatchShownSearchResults] = useReducer(shownSearchResultsReducer, []);
+  const [lastSelectedContent, setLastSelectedContent] = useState();
 
-  var searchTerm = searchForm[0];
-  var filmOrSeries = searchForm[1];
-  var country = searchForm[2];
-  var safeSearch = searchForm[3];
+  const searchTerm = searchForm[0];
+  const filmOrSeries = searchForm[1];
+  const country = searchForm[2];
+  const safeSearch = searchForm[3];
 
   //Divide selectedContent into batches of 7 for the rendering to look pretty
   var sevensOfSelected = [];
@@ -127,17 +128,23 @@ export default function FindContent({ searchForm }) {
     });
   }
 
-  function addContentToLastArray(id, title, posterPath) {
+  function addContentToLastArray(id, title, posterPath, contentType) {
     dispatchFoundItems({
       type: "addToLastArray",
       id: id,
       title: title,
       posterPath: posterPath,
+      contentType: contentType,
     });
   }
 
   //Take user click -> add item to selected content & hidden ids
   function selectContent(item) {
+    //check if the item already has streaming details property. If not make func call
+    // IF does, then just save it straight - reduces calls in case user deselects then reselects
+    console.log(item);
+    //const streamingOptions = await findStreamingOptions(item);
+    console.log(item);
     dispatchSelectContent({
       type: "added",
       item: item,
@@ -181,7 +188,9 @@ export default function FindContent({ searchForm }) {
       .then((response) => response.json())
       .then((response) => {
         const baseUrl = response.images.base_url;
-        const pixelSize = response.images.poster_sizes[1];
+        // Need to add an extra detail in here to get both small & larger poster so that can adjust size#
+        // Adjusted size taken from 1 -> 3, so they look better @ scale
+        const pixelSize = response.images.poster_sizes[3];
 
         setphotosUrl(`${baseUrl}${pixelSize}`);
       })
@@ -212,12 +221,12 @@ export default function FindContent({ searchForm }) {
           var id = result.id;
           var title = result.name ? result.name : result.title;
           var posterPath = result.poster_path;
-          //if ("title" in result) {
-          //  var contentType = "movie";
-          //} else {
-          //  var contentType = "tv";
-          //}
-          addContentToLastArray(id, title, posterPath);
+          if ("title" in result) {
+            var contentType = "movie";
+          } else {
+            var contentType = "tv";
+          }
+          addContentToLastArray(id, title, posterPath, contentType);
         });
       });
   }, [searchForm]);
@@ -240,13 +249,15 @@ export default function FindContent({ searchForm }) {
             >
               {itemArray.map(
                 (item, index2) =>
+                  // Lazy & ternary operator, cheat out HTML when 1st is True
                   isVisible(item.id, hiddenItemIds) && (
                     <div onClick={() => selectContent(item)}>
                       <img
                         key={item.id}
                         src={photosUrl + item.posterPath}
                         alt={item.title}
-                        //width={100}
+                        //Locking width lets use larger posster w/o needing additional call/ storing info
+                        width={200}
                         //looks @ css flexbox/ padding/ margin for spacing
                       />
                       <p>{item.title}</p>
@@ -273,6 +284,7 @@ export default function FindContent({ searchForm }) {
           </div>
         ))}
       </div>
+      <FindStreamingOptions item={selectedContent} />
     </>
   );
 }
