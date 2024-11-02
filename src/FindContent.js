@@ -46,72 +46,25 @@ function foundItemsReducer(shows, action) {
   }
 }
 
-////Find index of element, splice array around it & return new array
-function removeElement(element, array) {
-  const index = array.indexOf(element);
-  if (index > -1) {
-    array.splice(index, 1);
-  }
-  return [...array];
-}
-
-//Control the content in selectedContent.
-function selectedContentReducer(selectedContent, action) {
-  switch (action.type) {
-    case "added":
-      return [...selectedContent, action.item];
-    case "removed":
-      return removeElement(action.item, selectedContent);
-    default: {
-      throw Error("Unknown Action");
-    }
-  }
-}
-
-//Control the items that are 'Hidden' from search draws, ie content that has been selected.
-function hiddentItemIdsReducer(hiddenItemIds, action) {
-  switch (action.type) {
-    case "added":
-      return [...hiddenItemIds, action.id];
-    case "removed":
-      return removeElement(action.id, hiddenItemIds);
-    default: {
-      throw Error("Unknown Action");
-    }
-  }
-}
-
-export default function FindContent({ searchForm }) {
+export default function FindContent({
+  searchForm,
+  addHiddenItem,
+  hiddenItems,
+}) {
   //useReducer to track hiddenContent
   //Content returned from API after form search
   const [foundItems, dispatchFoundItems] = useReducer(foundItemsReducer, []);
   //Url for photos from API call
   const [photosUrl, setphotosUrl] = useState("");
-  //Content user has clicked from accordion to add to wanted content
-  const [selectedContent, dispatchSelectContent] = useReducer(
-    selectedContentReducer,
-    []
-  );
+
   //Stores search terms used by the user to name accordion sections
   const [searchedTerms, setSearchedTerms] = useState([]);
-  //Stores the IDs of items that have been selected in order to work out hiding them
-  const [hiddenItemIds, dispatchHiddenItemIds] = useReducer(
-    hiddentItemIdsReducer,
-    []
-  );
-  const [lastSelectedContent, setLastSelectedContent] = useState();
+  //
 
   const searchTerm = searchForm[0];
   const filmOrSeries = searchForm[1];
   const country = searchForm[2];
   const safeSearch = searchForm[3];
-
-  //Divide selectedContent into batches of 7 for the rendering to look pretty
-  var sevensOfSelected = [];
-  for (var i = 0; i < selectedContent.length; i += 7) {
-    var batchOfSeven = selectedContent.slice(i, i + 7);
-    sevensOfSelected.push(batchOfSeven);
-  }
 
   //  function addContent(id, title, posterPath) {
   //    dispatchFoundItems({
@@ -139,39 +92,39 @@ export default function FindContent({ searchForm }) {
   }
 
   //Take user click -> add item to selected content & hidden ids
-  function selectContent(item) {
-    //check if the item already has streaming details property. If not make func call
-    // IF does, then just save it straight - reduces calls in case user deselects then reselects
-    console.log(item);
-    //const streamingOptions = await findStreamingOptions(item);
-    console.log(item);
-    dispatchSelectContent({
-      type: "added",
-      item: item,
-    });
-    dispatchHiddenItemIds({
-      type: "added",
-      id: item.id,
-    });
-  }
+  // function selectContent(item) {
+  //   //check if the item already has streaming details property. If not make func call
+  //   // IF does, then just save it straight - reduces calls in case user deselects then reselects
+  //   console.log(item);
+  //   //const streamingOptions = await findStreamingOptions(item);
+  //   console.log(item);
+  //   dispatchSelectContent({
+  //     type: "added",
+  //     item: item,
+  //   });
+  //   dispatchHiddenItemIds({
+  //     type: "added",
+  //     id: item.id,
+  //   });
+  // }
 
-  //Take user click -> remove item from selected content & hidden ids.
-  function removeContent(item) {
-    dispatchSelectContent({
-      type: "removed",
-      item: item,
-    });
-    dispatchHiddenItemIds({
-      type: "removed",
-      id: item.id,
-    });
-  }
+  // //Take user click -> remove item from selected content & hidden ids.
+  // function removeContent(item) {
+  //   dispatchSelectContent({
+  //     type: "removed",
+  //     item: item,
+  //   });
+  //   dispatchHiddenItemIds({
+  //     type: "removed",
+  //     id: item.id,
+  //   });
+  // }
 
   //Check if content is visible: iterate through the IDs in hiddenItemIds to look for a match.
-  function isVisible(id, hiddenItemIds) {
+  function isVisible(id, hiddenItems) {
     var visible = true;
-    hiddenItemIds.forEach((item) => {
-      if (item == id) {
+    hiddenItems.forEach((item) => {
+      if (item.id == id) {
         visible = false;
       }
     });
@@ -250,8 +203,8 @@ export default function FindContent({ searchForm }) {
               {itemArray.map(
                 (item, index2) =>
                   // Lazy & ternary operator, cheat out HTML when 1st is True
-                  isVisible(item.id, hiddenItemIds) && (
-                    <div onClick={() => selectContent(item)}>
+                  isVisible(item.id, hiddenItems) && (
+                    <div onClick={() => addHiddenItem(item)}>
                       <img
                         key={item.id}
                         src={photosUrl + item.posterPath}
@@ -268,23 +221,13 @@ export default function FindContent({ searchForm }) {
           </Accordion.Item>
         ))}
       </Accordion>
-      <div className="Container-Container">
-        <p></p>
-        <h1>Selected Content</h1>
-        {sevensOfSelected.map((batch) => (
-          <div className="Container">
-            {batch.map((item) => (
-              <img
-                key={item.id}
-                src={photosUrl + item.posterPath}
-                alt={item.title}
-                onClick={() => removeContent(item)}
-              />
-            ))}
-          </div>
-        ))}
-      </div>
-      <FindStreamingOptions item={selectedContent} />
+      {hiddenItems.length != 0 && (
+        <FindStreamingOptions
+          hiddenItems={hiddenItems}
+          addHiddenItem={addHiddenItem}
+          photosUrl={photosUrl}
+        />
+      )}
     </>
   );
 }

@@ -1,13 +1,44 @@
 import logo from "./logo.svg";
 import "./App.css";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useReducer } from "react";
 import { APIReadKey } from "./keys";
 import FindContent from "./FindContent";
 
 function App() {
+  //Control the items that are 'Hidden' from search draws, ie content that has been selected.
+  ////Find index of element, splice array around it & return new array
+  function removeElement(element, array) {
+    const index = array.indexOf(element);
+    if (index > -1) {
+      array.splice(index, 1);
+    }
+    return [...array];
+  }
+
+  function hiddenItemsReducer(hiddenItems, action) {
+    switch (action.type) {
+      case "added":
+        return [...hiddenItems, action.item];
+      case "removed":
+        return removeElement(action.item, hiddenItems);
+      default: {
+        throw Error("Unknown Action");
+      }
+    }
+  }
+
+  function addHiddenItem(item) {
+    dispatchHiddenItems({
+      type: "added",
+      item: item,
+    });
+  }
+
   // javascript stuff goes here  :)
   // Country should probably be stored as a separate drop-down & sent to FindStreamingOptions directly,
   //   its not actually needsd in FindContent, so making it part of the form only complicates things
+  const [hiddenItems, dispatchHiddenItems] = useReducer(hiddenItemsReducer, []);
+  // form contents
   const [keyTerms, setKeyTerms] = useState("");
   const [filmOrSeries, setFilmOrSeries] = useState("tv");
   const [country, setCountry] = useState("GB");
@@ -26,21 +57,21 @@ function App() {
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <form id="showSearchForm" onSubmit={handleSubmit}>
-          <div class="input-group">
+          <div className="input-group">
             <input
               type="text"
-              class="input"
+              className="input"
               id="searchTitle"
               name="searchTitle"
               placeholder="Search for Content..."
-              autocomplete="off"
+              autoComplete="off"
               value={keyTerms}
               onChange={(e) => setKeyTerms(e.target.value)}
             />
-            <input class="button--submit" value="Seach" type="submit" />
+            <input className="button--submit" value="Seach" type="submit" />
           </div>
-          <div class="radio-inputs">
-            <label class="radio" htmlFor="series">
+          <div className="radio-inputs">
+            <label className="radio" htmlFor="series">
               <input
                 type="radio"
                 id="series"
@@ -49,9 +80,9 @@ function App() {
                 defaultChecked
                 onClick={(e) => setFilmOrSeries(e.target.value)}
               />
-              <span class="name">SERIES</span>
+              <span className="name">SERIES</span>
             </label>
-            <label class="radio" htmlFor="film">
+            <label className="radio" htmlFor="film">
               <input
                 type="radio"
                 id="film"
@@ -59,12 +90,16 @@ function App() {
                 value="movie"
                 onClick={(e) => setFilmOrSeries(e.target.value)}
               />
-              <span class="name">FILM</span>
+              <span className="name">FILM</span>
             </label>
           </div>
         </form>
         <script src="FindFilmReducer"></script>
-        <FindContent searchForm={search} />
+        <FindContent
+          searchForm={search}
+          addHiddenItem={addHiddenItem}
+          hiddenItems={hiddenItems}
+        />
         <a
           className="App-link"
           href="https://reactjs.org"
