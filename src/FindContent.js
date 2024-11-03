@@ -7,7 +7,7 @@ import Row from "react-bootstrap/Row";
 import findStreamingOptions from "./FindStreamingOptions";
 import FindStreamingOptions from "./FindStreamingOptions";
 
-var authorization = { Authorization: `Bearer ${APIReadKey}` };
+const authorization = { Authorization: `Bearer ${APIReadKey}` };
 
 //Control the content of foundItems.
 function foundItemsReducer(shows, action) {
@@ -50,13 +50,11 @@ export default function FindContent({
   searchForm,
   hiddenItems,
   addHiddenItem,
-  removeHiddenItem,
+  photosUrl,
 }) {
   //useReducer to track hiddenContent
   //Content returned from API after form search
   const [foundItems, dispatchFoundItems] = useReducer(foundItemsReducer, []);
-  //Url for photos from API call
-  const [photosUrl, setphotosUrl] = useState("");
 
   //Stores search terms used by the user to name accordion sections
   const [searchedTerms, setSearchedTerms] = useState([]);
@@ -101,32 +99,8 @@ export default function FindContent({
       }
     });
 
-    /*
-      if(hiddenItems.some(item => item.id == id)) {
-      visible = false}
-    */
-
     return visible;
   }
-
-  useEffect(() => {
-    //Get img pathway config details
-    const configQueryUrl = "https://api.themoviedb.org/3/configuration";
-    fetch(configQueryUrl, {
-      method: "GET",
-      headers: authorization,
-    })
-      .then((response) => response.json())
-      .then((response) => {
-        const baseUrl = response.images.base_url;
-        // Need to add an extra detail in here to get both small & larger poster so that can adjust size#
-        // Adjusted size taken from 1 -> 3, so they look better @ scale
-        const pixelSize = response.images.poster_sizes[3];
-
-        setphotosUrl(`${baseUrl}${pixelSize}`);
-      })
-      .catch((err) => console.error(err));
-  }, []);
 
   useEffect(() => {
     //Catch if form is empy to prevent API call error.
@@ -199,13 +173,6 @@ export default function FindContent({
           </Accordion.Item>
         ))}
       </Accordion>
-      {hiddenItems.length != 0 && (
-        <FindStreamingOptions
-          hiddenItems={hiddenItems}
-          removeHiddenItem={removeHiddenItem}
-          photosUrl={photosUrl}
-        />
-      )}
     </>
   );
 }
