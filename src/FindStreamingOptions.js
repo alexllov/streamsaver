@@ -17,15 +17,15 @@ function removeElement(element, array) {
   if (index > -1) {
     array.splice(index, 1);
   }
-  return [...array];
+  return array;
 }
 
 //Control the content in selectedContent.
 function selectedContentReducer(selectedContent, action) {
   switch (action.type) {
-    case "added":
+    case "add":
       return [...selectedContent, action.item];
-    case "removed":
+    case "remove":
       return removeElement(action.item, selectedContent);
     default: {
       throw Error("Unknown Action");
@@ -35,45 +35,76 @@ function selectedContentReducer(selectedContent, action) {
 
 export default function FindStreamingOptions({
   hiddenItems,
-  addHiddenItem,
+  removeHiddenItem,
   photosUrl,
 }) {
-  console.log(hiddenItems);
   //Content user has clicked from accordion to add to wanted content
-  const [selectedContent, dispatchSelectContent] = useReducer(
+  // const [newItem, setNewItem] = useState([]);
+  const [selectedContent, dispatchSelectedContent] = useReducer(
     selectedContentReducer,
     []
   );
+  //const [newItem, setNewItem] = useState([]);
 
   //Divide selectedContent into batches of 7 for the rendering to look pretty
+  console.log(selectedContent);
   var sevensOfSelected = [];
-  for (var i = 0; i < hiddenItems.length; i += 7) {
-    var batchOfSeven = hiddenItems.slice(i, i + 7);
+  for (var i = 0; i < selectedContent.length; i += 7) {
+    var batchOfSeven = selectedContent.slice(i, i + 7);
     sevensOfSelected.push(batchOfSeven);
+  }
+  console.log(sevensOfSelected);
+
+  function addContentToSelectedContent(item, streamingOptions) {
+    dispatchSelectedContent({
+      type: "add",
+      item: {
+        id: item.id,
+        title: item.title,
+        posterPath: item.posterPath,
+        contentType: item.contentType,
+        streamingOptions: streamingOptions,
+      },
+    });
+  }
+
+  function removeContent(item) {
+    dispatchSelectedContent({
+      type: "remove",
+      item: item,
+    });
+    removeHiddenItem(item);
   }
 
   const lenHiddenItems = hiddenItems.length;
   const newItem = hiddenItems[lenHiddenItems - 1];
-
-  const url = `//api.themoviedb.org/3/${newItem.contentType}/${newItem.id}/watch/providers`;
-  // const [selectedContent, dispatchSelectContent] = useReducer(
-  //   selectedContentReducer,
-  //   []
-  // );
-  //Catch if selections is empy to prevent API call error.
+  console.log(newItem);
 
   //Get img pathway config details
-  fetch(url, {
-    method: "GET",
-    headers: authorization,
-  })
-    .then((response) => response.json())
-    .then((response) => {
-      //THIS IS WHERE WE DO STUFF WITH OUR OBJECT
-      const streamingOptions = console.log(response.results[country].flatrate);
-      // addSelectedContent(item, streamingOptions);
+  useEffect(() => {
+    //check for stuff in hidden but not in selected
+    for (const item of selectedContent) {
+      if (item.id == newItem.id) {
+        return;
+      }
+    }
+
+    const url = `//api.themoviedb.org/3/${newItem.contentType}/${newItem.id}/watch/providers`;
+
+    fetch(url, {
+      method: "GET",
+      headers: authorization,
     })
-    .catch((err) => console.error(err));
+      .then((response) => response.json())
+      .then((response) => {
+        //THIS IS WHERE WE DO STUFF WITH OUR OBJECT
+        console.log(newItem);
+        const streamingOptions = response.results[country].flatrate;
+        addContentToSelectedContent(newItem, streamingOptions);
+        console.log(selectedContent);
+      })
+      .catch((err) => console.error(err));
+  }, [hiddenItems]);
 
   return (
     <div className="Container-Container">
@@ -86,7 +117,7 @@ export default function FindStreamingOptions({
               key={item.id}
               src={photosUrl + item.posterPath}
               alt={item.title}
-              //onClick={() => removeContent(item)}
+              onClick={() => removeContent(item)}
             />
           ))}
         </div>

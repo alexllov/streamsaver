@@ -12,7 +12,9 @@ function App() {
     if (index > -1) {
       array.splice(index, 1);
     }
-    return [...array];
+    array = array.filter((item) => item.id != element.id)
+
+    return array;
   }
 
   function hiddenItemsReducer(hiddenItems, action) {
@@ -34,10 +36,18 @@ function App() {
     });
   }
 
+  function removeHiddenItem(item) {
+    dispatchHiddenItems({
+      type: "removed",
+      item: item,
+    });
+  }
+
   // javascript stuff goes here  :)
   // Country should probably be stored as a separate drop-down & sent to FindStreamingOptions directly,
   //   its not actually needsd in FindContent, so making it part of the form only complicates things
   const [hiddenItems, dispatchHiddenItems] = useReducer(hiddenItemsReducer, []);
+
   // form contents
   const [keyTerms, setKeyTerms] = useState("");
   const [filmOrSeries, setFilmOrSeries] = useState("tv");
@@ -97,8 +107,9 @@ function App() {
         <script src="FindFilmReducer"></script>
         <FindContent
           searchForm={search}
-          addHiddenItem={addHiddenItem}
           hiddenItems={hiddenItems}
+          addHiddenItem={addHiddenItem}
+          removeHiddenItem={removeHiddenItem}
         />
         <a
           className="App-link"

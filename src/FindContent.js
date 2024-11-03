@@ -48,8 +48,9 @@ function foundItemsReducer(shows, action) {
 
 export default function FindContent({
   searchForm,
-  addHiddenItem,
   hiddenItems,
+  addHiddenItem,
+  removeHiddenItem,
 }) {
   //useReducer to track hiddenContent
   //Content returned from API after form search
@@ -91,35 +92,6 @@ export default function FindContent({
     });
   }
 
-  //Take user click -> add item to selected content & hidden ids
-  // function selectContent(item) {
-  //   //check if the item already has streaming details property. If not make func call
-  //   // IF does, then just save it straight - reduces calls in case user deselects then reselects
-  //   console.log(item);
-  //   //const streamingOptions = await findStreamingOptions(item);
-  //   console.log(item);
-  //   dispatchSelectContent({
-  //     type: "added",
-  //     item: item,
-  //   });
-  //   dispatchHiddenItemIds({
-  //     type: "added",
-  //     id: item.id,
-  //   });
-  // }
-
-  // //Take user click -> remove item from selected content & hidden ids.
-  // function removeContent(item) {
-  //   dispatchSelectContent({
-  //     type: "removed",
-  //     item: item,
-  //   });
-  //   dispatchHiddenItemIds({
-  //     type: "removed",
-  //     id: item.id,
-  //   });
-  // }
-
   //Check if content is visible: iterate through the IDs in hiddenItemIds to look for a match.
   function isVisible(id, hiddenItems) {
     var visible = true;
@@ -128,6 +100,12 @@ export default function FindContent({
         visible = false;
       }
     });
+
+    /*
+      if(hiddenItems.some(item => item.id == id)) {
+      visible = false}
+    */
+
     return visible;
   }
 
@@ -224,7 +202,7 @@ export default function FindContent({
       {hiddenItems.length != 0 && (
         <FindStreamingOptions
           hiddenItems={hiddenItems}
-          addHiddenItem={addHiddenItem}
+          removeHiddenItem={removeHiddenItem}
           photosUrl={photosUrl}
         />
       )}
