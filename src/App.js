@@ -82,6 +82,7 @@ function App() {
       item: item,
     });
     removeHiddenItem(item);
+    setResultsLoaded(false);
   }
 
   // javascript stuff goes here  :)
@@ -179,12 +180,14 @@ function App() {
           </div>
         </form>
         <script src="FindFilmReducer"></script>
-        <FindContent
-          searchForm={search}
-          hiddenItems={hiddenItems}
-          addHiddenItem={addHiddenItem}
-          photosUrl={photosUrl}
-        />
+        {!resultsLoaded && (
+          <FindContent
+            searchForm={search}
+            hiddenItems={hiddenItems}
+            addHiddenItem={addHiddenItem}
+            photosUrl={photosUrl}
+          />
+        )}
         {hiddenItems.length != 0 && (
           <FindStreamingOptions
             hiddenItems={hiddenItems}

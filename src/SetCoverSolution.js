@@ -1,4 +1,4 @@
-import { useEffect, useReducer } from "react";
+import { useEffect, useReducer, useState } from "react";
 
 /*Providers Contains: 
 provider_name: 
@@ -33,8 +33,7 @@ function providersReducer(providers, action) {
         },
       ];
     case "addContentToProvider":
-      //this will get the provider w/ all its new info + newContent as the added piece
-      //Need to get old content details: identify the old element, get its old data
+      //Get the content of the old entry to combine w/ new details when replaced
       var previousContent = getContentProvided(action.provider, providers);
       var content = [...previousContent, action.newContent];
       providers = removeElement(action.provider, providers);
@@ -47,21 +46,15 @@ function providersReducer(providers, action) {
           availableContent: content,
         },
       ];
-
-    //   return [
-    //     ...providers,
-    //     {...providers[action.provider_name],
-    //         availableContent : [
-    //             ...providers[action.provider_name].availableContent,
-    //             action.availableContent
-    //         ]
-    //     }
-    // ]
   }
 }
 
+//function unstreamableContentReducer(unstreamableContent)
+
 export default function SetCoverSolution(selectedContent) {
   const [providers, dispatchProviders] = useReducer(providersReducer, []);
+  //const [unstreamableContent, dispatchUnstreamableContent] = useReducer(unstreamableContentReducer,[]);
+  const [unstreamableContent, setUnstreamableContent] = useState([]);
 
   function addProvider(content, provider) {
     dispatchProviders({
@@ -81,31 +74,68 @@ export default function SetCoverSolution(selectedContent) {
     });
   }
 
+  //IDENTIFY WHICH STREAMING SERVICES PROVIDE WHAT CONTENT
   useEffect(() => {
     var loggedStreamingServices = [];
     //Go thruogh every piece of content
     for (var content of selectedContent.selectedContent) {
       //Go through each provider for a piece of content
-      //NEED TO ADD AN ERROR CATCH FOR IF CONTENT HAS NO STREAMING OPTIONS
-      for (var streamingService of content.streamingOptions) {
-        var repeatProvider = false;
-        //Go through all already identified providers
-        for (var provider of loggedStreamingServices) {
-          if (provider.provider_name === streamingService.provider_name) {
-            repeatProvider = true;
-            //CALL FUNCTION TO ADD CONTENT TO LIST OF PROVIDED CONTENT FOR THAT PROVIDER
-            addContentToProvider(content, provider);
+      /* NEED TO ADD AN ERROR CATCH FOR IF CONTENT HAS NO STREAMING OPTIONS
+         THIS SHOULD BE DONE IN SELECTING CONTENT, IF NO STREAMING OPTIONS -> UNAVAILABLE, RATHER THAN SELECTED
+         AVOIDS THIS ERR COMPLETELY
+         CREATE A NEW ARRAY OF SELECTABLE SHOWS WHERE THEY ARE SHOWN AS UNAVAILABLE
+     */
+      console.log(content);
+      if (content.streamingOptions !== undefined) {
+        for (var streamingService of content.streamingOptions) {
+          var repeatProvider = false;
+          //Go through all already identified providers
+          for (var provider of loggedStreamingServices) {
+            if (provider.provider_name === streamingService.provider_name) {
+              repeatProvider = true;
+              //CALL FUNCTION TO ADD CONTENT TO LIST OF PROVIDED CONTENT FOR THAT PROVIDER
+              addContentToProvider(content, provider);
+            }
+          }
+          if (!repeatProvider) {
+            //ADD PROVIDER TO LIST OF PROVIDERS
+            addProvider(content, streamingService);
+            loggedStreamingServices.push(streamingService);
           }
         }
-        if (!repeatProvider) {
-          //ADD PROVIDER TO LIST OF PROVIDERS
-          console.log("Provider about to be added:", streamingService);
-          addProvider(content, streamingService);
-          loggedStreamingServices.push(streamingService);
-        }
+      } else {
+        //NEEDS REPLACING WITH A REDUCER? content is "object Object" here for some reason
+        setUnstreamableContent([...unstreamableContent, content]);
       }
     }
   }, []);
   console.log(providers);
+  console.log("Unstreamable:", unstreamableContent);
+
+  //Identify Subsets
+  //LOOK @ THE BASIC SET OPERATOR TOOLS & SEE IF THEY'RE MORE EFFICIENT FOR THIS
+  function isSubset(parentArray, childArray) {
+    return childArray.every((element) => parentArray.includes(element));
+  }
+  //REMOVE ALL SUBSETS
+  var subsets = [];
+  for (var provider of providers) {
+    for (var provider2 of providers) {
+      // 3rd parameter will cause problems if both are identical sets, tho tbf in that instance it makes sense to keep both anyway
+      if (
+        provider != provider2 &&
+        isSubset(provider.availableContent, provider2.availableContent) &&
+        !isSubset(provider2.availableContent, provider.availableContent)
+      ) {
+        console.log(
+          `Wow, ${provider2.provider_name} is a subset of ${provider.provider_name}!`
+        );
+        subsets.push(provider2);
+      }
+    }
+  }
+  subsets = new Set(subsets);
+  console.log("All identified subsets:", subsets);
+
   return <>HI :)</>;
 }
