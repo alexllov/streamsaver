@@ -41,30 +41,6 @@
   display: contents;
 }
 
-.Container {
-  margin: 100px 0 0 0;
-  width: 70%;
-  height: 450px;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 3px;
-  transition: all ease-in-out 0.5s;
-}
-
-.Container img {
-  width: 10%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 10px;
-  border: 2px solid rgba(255, 255, 255, 0.684);
-  transition: all ease-in-out 0.5s;
-}
-
-.Container img:hover {
-  width: 25%
-}
-
 .input-group {
   display: flex;
   align-items: center;

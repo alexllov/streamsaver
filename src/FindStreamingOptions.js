@@ -1,5 +1,6 @@
 import { useState, useEffect, useReducer } from "react";
 import { APIReadKey } from "./keys";
+import Accordion from "react-bootstrap/Accordion";
 var authorization = { Authorization: `Bearer ${APIReadKey}` };
 const country = "GB";
 
@@ -45,22 +46,39 @@ export default function FindStreamingOptions({
       .catch((err) => console.error(err));
   }, [hiddenItems]);
 
+  //onClick={() => removeContent(item)}
+
   return (
-    <div className="Container-Container">
-      <p></p>
-      <h1>Selected Content</h1>
-      {sevensOfSelected.map((batch) => (
-        <div className="Container">
-          {batch.map((item) => (
-            <img
-              key={item.id}
-              src={photosUrl + item.posterPath}
-              alt={item.title}
-              onClick={() => removeContent(item)}
-            />
+    <>
+      <Accordion alwaysOpen style={{ width: "80vw" }}>
+        <Accordion.Header>Available Conent</Accordion.Header>
+        <Accordion.Body
+          key={`Available Conent`}
+          style={{
+            width: "80vw",
+            gap: "1vw",
+            display: "flex",
+            flexDirection: "row",
+            overflowX: "auto",
+          }}
+        >
+          {selectedContent.map((item, index2) => (
+            // Lazy & ternary operator, cheat out HTML when 1st is True
+            <div onClick={() => removeContent(item)}>
+              <img
+                key={item.id}
+                src={photosUrl + item.posterPath}
+                alt={item.title}
+                //Locking width lets use larger posster w/o needing additional call/ storing info
+                width={200}
+                //looks @ css flexbox/ padding/ margin for spacing
+              />
+              <p>{item.title}</p>
+            </div>
           ))}
-        </div>
-      ))}
-    </div>
+          ;
+        </Accordion.Body>
+      </Accordion>
+    </>
   );
 }

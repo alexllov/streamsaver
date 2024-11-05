@@ -138,7 +138,7 @@ export default function FindContent({
 
   return (
     <>
-      <Accordion alwaysOpen style={{ width: "80vw" }}>
+      <Accordion alwaysOpen style={{ width: "80vw" }} data-bs-theme="dark">
         {foundItems.map((itemArray, index) => (
           <Accordion.Item key={index} eventKey={index}>
             <Accordion.Header>{searchedTerms[index]}</Accordion.Header>

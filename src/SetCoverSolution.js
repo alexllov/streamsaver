@@ -43,7 +43,7 @@ function findProviders(selectedContent) {
   var providers = [];
   var unstreamableContent = [];
   //Go thruogh every piece of content
-  for (var content of selectedContent.selectedContent) {
+  for (var content of selectedContent) {
     //Go through each provider for a piece of content + catch err where no flatrate
     if (content.streamingOptions !== undefined) {
       for (var streamingService of content.streamingOptions) {
@@ -117,7 +117,7 @@ function removeSubsets(providers) {
 
 function greedySolve(providers, selectedContent, unstreamableContent) {
   var solution = [];
-  const allAvailableContent = selectedContent.selectedContent.filter(
+  const allAvailableContent = selectedContent.filter(
     (item) => !unstreamableContent.includes(item)
   );
   var contentToFind = allAvailableContent;
@@ -136,18 +136,15 @@ function greedySolve(providers, selectedContent, unstreamableContent) {
     foundItems.push(...providers[0].availableContent);
     providers.splice(0, 1);
     for (var provider of providers) {
-      console.log("Provider before filtering:", provider);
       provider.availableContent = provider.availableContent.filter(
         (item) => !foundItems.includes(item)
       );
     }
-    console.log("content to find =", contentToFind);
-    console.log("founditems =", foundItems);
   }
   return solution;
 }
 
-export default function SetCoverSolution(selectedContent, photosUrl) {
+export default function SetCoverSolution({ selectedContent, photosUrl }) {
   const [finalProviders, setFinalProviders] = useState([]);
   useEffect(() => {
     //Identfy all Providers & content they offer
@@ -158,9 +155,6 @@ export default function SetCoverSolution(selectedContent, photosUrl) {
 
     setFinalProviders(solution);
   }, []);
-
-  console.log("Solution =", finalProviders);
-  console.log("Photo Url is:", photosUrl);
 
   return (
     <>
