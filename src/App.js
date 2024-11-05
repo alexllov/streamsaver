@@ -203,7 +203,10 @@ function App() {
           </Button>
         )}
         {resultsLoaded && (
-          <SetCoverSolution selectedContent={selectedContent} />
+          <SetCoverSolution
+            selectedContent={selectedContent}
+            photosUrl={photosUrl}
+          />
         )}
         <a
           className="App-link"

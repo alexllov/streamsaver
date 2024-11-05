@@ -1,4 +1,5 @@
 import { useEffect, useReducer, useState } from "react";
+import Accordion from "react-bootstrap/Accordion";
 
 /*Providers Contains: 
 provider_name: 
@@ -133,20 +134,20 @@ function greedySolve(providers, selectedContent, unstreamableContent) {
     solution.push(providers[0]);
     //This is adding duplicate content, which means the filtering isnt working properly, so while loop is stopping short
     foundItems.push(...providers[0].availableContent);
-    console.log(providers[0], "Next Puzzle Piece");
-    //Remove the content provided by providers[0] from all other providers
     providers.splice(0, 1);
-    console.log("After splice", providers);
     for (var provider of providers) {
-      provider.availableContent.filter((item) => !foundItems.includes(item));
+      console.log("Provider before filtering:", provider);
+      provider.availableContent = provider.availableContent.filter(
+        (item) => !foundItems.includes(item)
+      );
     }
-    console.log("Cleaned Providers", providers);
+    console.log("content to find =", contentToFind);
     console.log("founditems =", foundItems);
   }
   return solution;
 }
 
-export default function SetCoverSolution(selectedContent) {
+export default function SetCoverSolution(selectedContent, photosUrl) {
   const [finalProviders, setFinalProviders] = useState([]);
   useEffect(() => {
     //Identfy all Providers & content they offer
@@ -159,6 +160,41 @@ export default function SetCoverSolution(selectedContent) {
   }, []);
 
   console.log("Solution =", finalProviders);
+  console.log("Photo Url is:", photosUrl);
 
-  return <>Results will be shown here -Alice</>;
+  return (
+    <>
+      <Accordion alwaysOpen style={{ width: "80vw" }}>
+        {finalProviders.map((provider, index) => (
+          <Accordion.Item key={index} eventKey={index}>
+            <Accordion.Header>{provider.provider_name}</Accordion.Header>
+            <Accordion.Body
+              key={`${index}`}
+              style={{
+                width: "80vw",
+                gap: "1vw",
+                display: "flex",
+                flexDirection: "row",
+                overflowX: "auto",
+              }}
+            >
+              {provider.availableContent.map((item, index2) => (
+                <div>
+                  <img
+                    key={item.id}
+                    src={photosUrl + item.posterPath}
+                    alt={item.title}
+                    //Locking width lets use larger posster w/o needing additional call/ storing info
+                    width={200}
+                    //looks @ css flexbox/ padding/ margin for spacing
+                  />
+                  <p>{item.title}</p>
+                </div>
+              ))}
+            </Accordion.Body>
+          </Accordion.Item>
+        ))}
+      </Accordion>
+    </>
+  );
 }
