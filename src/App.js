@@ -199,7 +199,7 @@ function App() {
         )}
         {hiddenItems.length != 0 && !resultsLoaded && (
           <Button variant="success" onClick={handleClick}>
-            Click Me -alice
+            Click Me
           </Button>
         )}
         {resultsLoaded && (
