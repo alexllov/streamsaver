@@ -124,24 +124,24 @@ function greedySolve(providers, selectedContent, unstreamableContent) {
   while (foundItems.length < allAvailableContent.length) {
     //Identify all Subsets of providers (inc. lower priority providers of === sets)
     providers = removeSubsets(providers);
-    console.log("Identified Providers", providers);
     //Sort providers by length - break ties with priority
     providers.sort(
-      (a, b) =>
-        b.availableContent.length - a.availableContent.length ||
-        a.display_priority - b.display_priority
+      (a, b) => b.availableContent.length - a.availableContent.length
+      // || a.display_priority - b.display_priority
     );
-    console.log("Sorted providers", providers);
     //Take the top item of Providers & add to solution
     solution.push(providers[0]);
+    //This is adding duplicate content, which means the filtering isnt working properly, so while loop is stopping short
     foundItems.push(...providers[0].availableContent);
     console.log(providers[0], "Next Puzzle Piece");
     //Remove the content provided by providers[0] from all other providers
     providers.splice(0, 1);
+    console.log("After splice", providers);
     for (var provider of providers) {
       provider.availableContent.filter((item) => !foundItems.includes(item));
     }
     console.log("Cleaned Providers", providers);
+    console.log("founditems =", foundItems);
   }
   return solution;
 }
