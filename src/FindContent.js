@@ -1,11 +1,7 @@
 import { useState, useEffect, useReducer } from "react";
 import { APIReadKey } from "./keys";
 import Accordion from "react-bootstrap/Accordion";
-import Container from "react-bootstrap/Container";
-import Col from "react-bootstrap/Col";
-import Row from "react-bootstrap/Row";
-import findStreamingOptions from "./FindStreamingOptions";
-import FindStreamingOptions from "./FindStreamingOptions";
+import { Container } from "react-bootstrap";
 
 const authorization = { Authorization: `Bearer ${APIReadKey}` };
 
@@ -138,41 +134,47 @@ export default function FindContent({
 
   return (
     <>
-      <Accordion alwaysOpen style={{ width: "80vw" }} data-bs-theme="dark">
-        {foundItems.map((itemArray, index) => (
-          <Accordion.Item key={index} eventKey={index}>
-            <Accordion.Header>{searchedTerms[index]}</Accordion.Header>
-            <Accordion.Body
-              key={`${index}`}
-              style={{
-                width: "80vw",
-                gap: "1vw",
-                display: "flex",
-                flexDirection: "row",
-                overflowX: "auto",
-              }}
-            >
-              {itemArray.map(
-                (item, index2) =>
-                  // Lazy & ternary operator, cheat out HTML when 1st is True
-                  isVisible(item.id, hiddenItems) && (
-                    <div onClick={() => addHiddenItem(item)}>
-                      <img
-                        key={item.id}
-                        src={photosUrl + item.posterPath}
-                        alt={item.title}
-                        //Locking width lets use larger posster w/o needing additional call/ storing info
-                        width={200}
-                        //looks @ css flexbox/ padding/ margin for spacing
-                      />
-                      <p>{item.title}</p>
-                    </div>
-                  )
-              )}
-            </Accordion.Body>
-          </Accordion.Item>
-        ))}
-      </Accordion>
+      <Container
+        style={{
+          width: "80vw",
+          gap: "1rem",
+        }}
+      >
+        <Accordion alwaysOpen data-bs-theme="dark">
+          {foundItems.map((itemArray, index) => (
+            <Accordion.Item key={index} eventKey={index}>
+              <Accordion.Header>{searchedTerms[index]}</Accordion.Header>
+              <Accordion.Body
+                key={`${index}`}
+                style={{
+                  gap: "1rem",
+                  display: "flex",
+                  flexDirection: "row",
+                  overflowX: "auto",
+                }}
+              >
+                {itemArray.map(
+                  (item, index2) =>
+                    // Lazy & ternary operator, cheat out HTML when 1st is True
+                    isVisible(item.id, hiddenItems) && (
+                      <div onClick={() => addHiddenItem(item)}>
+                        <img
+                          key={item.id}
+                          src={photosUrl + item.posterPath}
+                          alt={item.title}
+                          //Locking width lets use larger posster w/o needing additional call/ storing info
+                          width={200}
+                          //looks @ css flexbox/ padding/ margin for spacing
+                        />
+                        <p>{item.title}</p>
+                      </div>
+                    )
+                )}
+              </Accordion.Body>
+            </Accordion.Item>
+          ))}
+        </Accordion>
+      </Container>
     </>
   );
 }

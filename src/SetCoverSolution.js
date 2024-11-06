@@ -1,5 +1,6 @@
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useState } from "react";
 import Accordion from "react-bootstrap/Accordion";
+import { Container } from "react-bootstrap";
 
 /*Providers Contains: 
 provider_name: 
@@ -120,7 +121,6 @@ function greedySolve(providers, selectedContent, unstreamableContent) {
   const allAvailableContent = selectedContent.filter(
     (item) => !unstreamableContent.includes(item)
   );
-  var contentToFind = allAvailableContent;
   var foundItems = [];
   while (foundItems.length < allAvailableContent.length) {
     //Identify all Subsets of providers (inc. lower priority providers of === sets)
@@ -158,37 +158,43 @@ export default function SetCoverSolution({ selectedContent, photosUrl }) {
 
   return (
     <>
-      <Accordion alwaysOpen style={{ width: "80vw" }}>
-        {finalProviders.map((provider, index) => (
-          <Accordion.Item key={index} eventKey={index}>
-            <Accordion.Header>{provider.provider_name}</Accordion.Header>
-            <Accordion.Body
-              key={`${index}`}
-              style={{
-                width: "80vw",
-                gap: "1vw",
-                display: "flex",
-                flexDirection: "row",
-                overflowX: "auto",
-              }}
-            >
-              {provider.availableContent.map((item, index2) => (
-                <div>
-                  <img
-                    key={item.id}
-                    src={photosUrl + item.posterPath}
-                    alt={item.title}
-                    //Locking width lets use larger posster w/o needing additional call/ storing info
-                    width={200}
-                    //looks @ css flexbox/ padding/ margin for spacing
-                  />
-                  <p>{item.title}</p>
-                </div>
-              ))}
-            </Accordion.Body>
-          </Accordion.Item>
-        ))}
-      </Accordion>
+      <Container
+        style={{
+          width: "80vw",
+          gap: "1rem",
+        }}
+      >
+        <Accordion alwaysOpen data-bs-theme="dark">
+          {finalProviders.map((provider, index) => (
+            <Accordion.Item key={index} eventKey={index}>
+              <Accordion.Header>{provider.provider_name}</Accordion.Header>
+              <Accordion.Body
+                key={`${index}`}
+                style={{
+                  gap: "1rem",
+                  display: "flex",
+                  flexDirection: "row",
+                  overflowX: "auto",
+                }}
+              >
+                {provider.availableContent.map((item, index2) => (
+                  <div>
+                    <img
+                      key={item.id}
+                      src={photosUrl + item.posterPath}
+                      alt={item.title}
+                      //Locking width lets use larger posster w/o needing additional call/ storing info
+                      width={200}
+                      //looks @ css flexbox/ padding/ margin for spacing
+                    />
+                    <p>{item.title}</p>
+                  </div>
+                ))}
+              </Accordion.Body>
+            </Accordion.Item>
+          ))}
+        </Accordion>
+      </Container>
     </>
   );
 }

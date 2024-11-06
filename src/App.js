@@ -1,5 +1,4 @@
 import logo from "./logo.svg";
-import "./App.css";
 import { useState, useEffect, useReducer } from "react";
 import { APIReadKey } from "./keys";
 import FindContent from "./FindContent";
@@ -8,6 +7,9 @@ import SetCoverSolution from "./SetCoverSolution";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
+import { Container, FloatingLabel, Row } from "react-bootstrap";
+import Stack from "react-bootstrap/Stack";
+import "./App.css";
 
 const authorization = { Authorization: `Bearer ${APIReadKey}` };
 
@@ -139,81 +141,121 @@ function App() {
 
   return (
     <div className="App">
+      <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+      ></meta>
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
-        <form id="showSearchForm" onSubmit={handleSubmit}>
-          <div className="input-group">
-            <input
-              type="text"
-              className="input"
-              id="searchTitle"
-              name="searchTitle"
-              placeholder="Search for Content..."
-              autoComplete="off"
-              value={keyTerms}
-              onChange={(e) => setKeyTerms(e.target.value)}
+        <Stack gap={"5 rem"}>
+          <Container
+            style={{
+              width: "80vw",
+              gap: "1rem",
+            }}
+          >
+            <Form
+              id="showSearchForm"
+              onSubmit={handleSubmit}
+              data-bs-theme="dark"
+            >
+              <InputGroup
+                style={{
+                  height: "4rem",
+                  borderRadius: "0.375rem 0.375rem 0 0",
+                  boxShadow: "0 0 0px 1px #198754",
+                }}
+              >
+                <Form.Control
+                  type="searchTerm"
+                  id="searchTerm"
+                  placeholder="Search for Content..."
+                  autoComplete="off"
+                  value={keyTerms}
+                  className="formSearchBox"
+                  onChange={(e) => setKeyTerms(e.target.value)}
+                />
+                <Button
+                  variant="outline-success"
+                  className="button--submit"
+                  type="submit"
+                  style={{ borderRadius: "0 0.375 0 0", border: 0 }}
+                >
+                  Search
+                </Button>
+              </InputGroup>
+              <div
+                className="radio-inputs"
+                style={{
+                  gap: "1rem",
+                }}
+              >
+                <label className="radio" htmlFor="series">
+                  <input
+                    type="radio"
+                    id="series"
+                    name="filmSeriesRadio"
+                    value="tv"
+                    defaultChecked
+                    onClick={(e) => setFilmOrSeries(e.target.value)}
+                  />
+                  <span className="name">SERIES</span>
+                </label>
+                <label className="radio" htmlFor="film">
+                  <input
+                    type="radio"
+                    id="film"
+                    name="filmSeriesRadio"
+                    value="movie"
+                    onClick={(e) => setFilmOrSeries(e.target.value)}
+                  />
+                  <span className="name">FILM</span>
+                </label>
+              </div>
+            </Form>
+          </Container>
+          {!resultsLoaded && (
+            <FindContent
+              searchForm={search}
+              hiddenItems={hiddenItems}
+              addHiddenItem={addHiddenItem}
+              photosUrl={photosUrl}
             />
-            <input className="button--submit" value="Seach" type="submit" />
-          </div>
-          <div className="radio-inputs">
-            <label className="radio" htmlFor="series">
-              <input
-                type="radio"
-                id="series"
-                name="filmSeriesRadio"
-                value="tv"
-                defaultChecked
-                onClick={(e) => setFilmOrSeries(e.target.value)}
-              />
-              <span className="name">SERIES</span>
-            </label>
-            <label className="radio" htmlFor="film">
-              <input
-                type="radio"
-                id="film"
-                name="filmSeriesRadio"
-                value="movie"
-                onClick={(e) => setFilmOrSeries(e.target.value)}
-              />
-              <span className="name">FILM</span>
-            </label>
-          </div>
-        </form>
-        <script src="FindFilmReducer"></script>
-        {!resultsLoaded && (
-          <FindContent
-            searchForm={search}
-            hiddenItems={hiddenItems}
-            addHiddenItem={addHiddenItem}
-            photosUrl={photosUrl}
-          />
-        )}
-        {hiddenItems.length != 0 && (
-          <FindStreamingOptions
-            hiddenItems={hiddenItems}
-            photosUrl={photosUrl}
-            selectedContent={selectedContent}
-            addContentToSelectedContent={addContentToSelectedContent}
-            removeContent={removeContent}
-          />
-        )}
-        {hiddenItems.length != 0 && !resultsLoaded && (
-          <Button variant="success" onClick={handleClick}>
-            Click Me
-          </Button>
-        )}
-        {resultsLoaded && (
-          <SetCoverSolution
-            selectedContent={selectedContent}
-            photosUrl={photosUrl}
-          />
-        )}
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        ></a>
+          )}
+          {hiddenItems.length != 0 && (
+            <FindStreamingOptions
+              hiddenItems={hiddenItems}
+              photosUrl={photosUrl}
+              selectedContent={selectedContent}
+              addContentToSelectedContent={addContentToSelectedContent}
+              removeContent={removeContent}
+            />
+          )}
+          {hiddenItems.length != 0 && !resultsLoaded && (
+            <Container
+              style={{
+                width: "80vw",
+                gap: "1rem",
+              }}
+            >
+              <Button variant="success" onClick={handleClick}>
+                Click Me
+              </Button>
+            </Container>
+          )}
+          {resultsLoaded && (
+            <SetCoverSolution
+              selectedContent={selectedContent}
+              photosUrl={photosUrl}
+            />
+          )}
+          <a
+            className="App-link"
+            href="https://reactjs.org"
+            target="_blank"
+            rel="noopener noreferrer"
+          ></a>
+        </Stack>
       </header>
     </div>
   );

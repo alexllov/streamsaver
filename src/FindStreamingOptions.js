@@ -1,6 +1,7 @@
 import { useState, useEffect, useReducer } from "react";
 import { APIReadKey } from "./keys";
-import Accordion from "react-bootstrap/Accordion";
+import Stack from "react-bootstrap/Stack";
+import { Container } from "react-bootstrap";
 var authorization = { Authorization: `Bearer ${APIReadKey}` };
 const country = "GB";
 
@@ -50,35 +51,40 @@ export default function FindStreamingOptions({
 
   return (
     <>
-      <Accordion alwaysOpen style={{ width: "80vw" }}>
-        <Accordion.Header>Available Conent</Accordion.Header>
-        <Accordion.Body
-          key={`Available Conent`}
-          style={{
-            width: "80vw",
-            gap: "1vw",
-            display: "flex",
-            flexDirection: "row",
-            overflowX: "auto",
-          }}
-        >
-          {selectedContent.map((item, index2) => (
-            // Lazy & ternary operator, cheat out HTML when 1st is True
-            <div onClick={() => removeContent(item)}>
-              <img
-                key={item.id}
-                src={photosUrl + item.posterPath}
-                alt={item.title}
-                //Locking width lets use larger posster w/o needing additional call/ storing info
-                width={200}
-                //looks @ css flexbox/ padding/ margin for spacing
-              />
-              <p>{item.title}</p>
-            </div>
-          ))}
-          ;
-        </Accordion.Body>
-      </Accordion>
+      <Container
+        style={{
+          width: "80vw",
+          gap: "1rem",
+        }}
+      >
+        <Stack class="mx-auto">
+          <div>Available Conent</div>
+          <div
+            key={`Available Conent`}
+            style={{
+              gap: "1rem",
+              display: "flex",
+              flexDirection: "row",
+              overflowX: "auto",
+            }}
+          >
+            {selectedContent.map((item, index2) => (
+              // Lazy & ternary operator, cheat out HTML when 1st is True
+              <div onClick={() => removeContent(item)}>
+                <img
+                  key={item.id}
+                  src={photosUrl + item.posterPath}
+                  alt={item.title}
+                  //Locking width lets use larger posster w/o needing additional call/ storing info
+                  width={200}
+                  //looks @ css flexbox/ padding/ margin for spacing
+                />
+                <p>{item.title}</p>
+              </div>
+            ))}
+          </div>
+        </Stack>
+      </Container>
     </>
   );
 }
