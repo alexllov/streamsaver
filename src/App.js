@@ -110,13 +110,15 @@ function App() {
 
   useEffect(() => {
     //Get img pathway config details
-    const configQueryUrl = "https://api.themoviedb.org/3/configuration";
-    fetch(configQueryUrl, {
+    const middleManUrl =
+      "https://beneficial-cherry-evergreen.glitch.me/photoUrl";
+    fetch(middleManUrl, {
       method: "GET",
       headers: authorization,
     })
       .then((response) => response.json())
       .then((response) => {
+        console.log(response);
         const baseUrl = response.images.base_url;
         // Need to add an extra detail in here to get both small & larger poster so that can adjust size#
         // Adjusted size taken from 1 -> 3, so they look better @ scale
