@@ -289,38 +289,22 @@ function App() {
             rel="noopener noreferrer"
           ></a>
         </Stack>
-        <Container
-          style={{
-            width: "80vw",
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
-            paddingBottom: "1rem",
-          }}
-        >
+        <Container className="attributionContainer">
           <div>
-            <img
-              src="https://www.themoviedb.org/assets/2/v4/logos/v2/blue_short-8e7b30f73a4020692ccca9c88bafe5dcb6f8a62a4c6bc55cd9ba82bb2cd95f6c.svg"
-              style={{
-                width: "20vw",
-              }}
-            ></img>
-            <p style={{ width: "20vw", textAlign: "left", margin: 0 }}>
-              This website uses TMDB and the TMDB APIs but is not endorsed,
-              certified, or otherwise approved by TMDB.
-            </p>
-          </div>
-          <br />
-          <div>
+            <img src="https://www.themoviedb.org/assets/2/v4/logos/v2/blue_short-8e7b30f73a4020692ccca9c88bafe5dcb6f8a62a4c6bc55cd9ba82bb2cd95f6c.svg"></img>
             <img
               alt="JustWatch"
               src="https://www.themoviedb.org/assets/2/v4/logos/justwatch-c2e58adf5809b6871db650fb74b43db2b8f3637fe3709262572553fa056d8d0a.svg"
               class="center"
-              style={{
-                width: "20vw",
-              }}
             ></img>
-            <p style={{ width: "20vw", textAlign: "center", margin: 0 }}>
+          </div>
+          <br />
+          <div>
+            <p>
+              This website uses TMDB and the TMDB APIs but is not endorsed,
+              certified, or otherwise approved by TMDB.
+            </p>
+            <p>
               Streaming details are found thanks to the JustWatch API (via
               TMDB).
             </p>

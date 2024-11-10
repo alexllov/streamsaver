@@ -42,6 +42,69 @@
   }
 }
 
+/* @media (max-device-width: 767px) { */
+  
+  .attributionContainer {
+    width: 80vw;
+    display: flex;
+    flex-direction: column;
+    gap: 1vw;
+    padding-bottom: 1rem;
+  }
+
+  .attributionContainer div {
+    display: grid;
+    align-content: start;
+  }
+
+  .attributionContainer div:nth-of-type(1) {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .attributionContainer > br {
+    display: none;
+  }
+
+  
+  .attributionContainer p {
+    width: 80vw;
+    text-align: left;
+  }
+
+  .attributionContainer img  {
+    width: 20vw;
+}
+/* } */
+
+/* @media (min-device-width: 768px) {
+  
+  .attributionContainer {
+    width: 80vw;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 1rem;
+  }
+  .attributionContainer div {
+    width: 80vw;
+    display: flex;
+    justify-content: space-between;
+    margin: 0;
+  }
+
+  .attributionContainer p {
+    width: 20vw;
+    text-align: left;
+    margin: 0;
+  }
+
+  .attributionContainer img {
+      width: 20vh;
+  }
+} */
+
+
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
