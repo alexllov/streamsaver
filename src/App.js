@@ -1,6 +1,5 @@
 import logo from "./logo.svg";
 import { useState, useEffect, useReducer } from "react";
-import { APIReadKey } from "./keys";
 import FindContent from "./FindContent";
 import FindStreamingOptions from "./FindStreamingOptions";
 import SetCoverSolution from "./SetCoverSolution";
@@ -11,7 +10,7 @@ import { Container, FloatingLabel, Row } from "react-bootstrap";
 import Stack from "react-bootstrap/Stack";
 import "./App.css";
 
-const authorization = { Authorization: `Bearer ${APIReadKey}` };
+const authorization = { Authorization: "Hello :)" };
 
 function removeElement(element, array) {
   const index = array.indexOf(element);
@@ -73,6 +72,8 @@ function App() {
         title: item.title,
         posterPath: item.posterPath,
         contentType: item.contentType,
+        justWatchLink: item.justWatchLink,
+        tmdbLink: item.tmdbLink,
         streamingOptions: streamingOptions,
       },
     });
@@ -101,6 +102,9 @@ function App() {
   //Bool for search results button
   const [resultsLoaded, setResultsLoaded] = useState(false);
 
+  //Bool for website instructions
+  const [showInstructions, setShowInstructions] = useState(true);
+
   // form contents
   const [keyTerms, setKeyTerms] = useState("");
   const [filmOrSeries, setFilmOrSeries] = useState("tv");
@@ -110,13 +114,15 @@ function App() {
 
   useEffect(() => {
     //Get img pathway config details
-    const configQueryUrl = "https://api.themoviedb.org/3/configuration";
-    fetch(configQueryUrl, {
+    const middleManUrl =
+      "https://beneficial-cherry-evergreen.glitch.me/photoUrl";
+    fetch(middleManUrl, {
       method: "GET",
       headers: authorization,
     })
       .then((response) => response.json())
       .then((response) => {
+        console.log("PhotoApi call made");
         const baseUrl = response.images.base_url;
         // Need to add an extra detail in here to get both small & larger poster so that can adjust size#
         // Adjusted size taken from 1 -> 3, so they look better @ scale
@@ -131,6 +137,8 @@ function App() {
     e.preventDefault();
     var search = [keyTerms, filmOrSeries, country, safeSearch];
     setSearch(search);
+    setResultsLoaded(false);
+    setShowInstructions(false);
     console.log(`You've Pressed Submit ${search}`);
   }
 
@@ -138,7 +146,7 @@ function App() {
     e.preventDefault();
     setResultsLoaded(true);
   }
-
+  //<img src={logo} className="App-logo" alt="logo" />
   return (
     <div className="App">
       <meta
@@ -146,12 +154,16 @@ function App() {
         content="width=device-width, initial-scale=1.0"
       ></meta>
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
+        <img src={logo} width="250" style={{ marginTop: 10 }} />
+        <br />
         <Stack gap={"5 rem"}>
           <Container
             style={{
               width: "80vw",
               gap: "1rem",
+              zIndex: "10",
+              position: "sticky",
+              top: "2vh",
             }}
           >
             <Form
@@ -179,7 +191,11 @@ function App() {
                   variant="outline-success"
                   className="button--submit"
                   type="submit"
-                  style={{ borderRadius: "0 0.375 0 0", border: 0 }}
+                  style={{
+                    borderRadius: "0 0.375 0 0",
+                    borderTop: 0,
+                    borderRight: 0,
+                  }}
                 >
                   Search
                 </Button>
@@ -214,6 +230,23 @@ function App() {
               </div>
             </Form>
           </Container>
+          {showInstructions && (
+            <Container
+              style={{
+                width: "80vw",
+                paddingTop: "1rem",
+              }}
+            >
+              <p>1. Search for the films & tv shows you want to watch.</p>
+              <br />
+              <p>2. Click on something to add it to Selected Content.</p>
+              <br />
+              <p>
+                3. Press the button to find which streaming services you need to
+                acces your content.
+              </p>
+            </Container>
+          )}
           {!resultsLoaded && (
             <FindContent
               searchForm={search}
@@ -256,6 +289,43 @@ function App() {
             rel="noopener noreferrer"
           ></a>
         </Stack>
+        <Container
+          style={{
+            width: "80vw",
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            paddingBottom: "1rem",
+          }}
+        >
+          <div>
+            <img
+              src="https://www.themoviedb.org/assets/2/v4/logos/v2/blue_short-8e7b30f73a4020692ccca9c88bafe5dcb6f8a62a4c6bc55cd9ba82bb2cd95f6c.svg"
+              style={{
+                width: "20vw",
+              }}
+            ></img>
+            <p style={{ width: "20vw", textAlign: "left", margin: 0 }}>
+              This website uses TMDB and the TMDB APIs but is not endorsed,
+              certified, or otherwise approved by TMDB.
+            </p>
+          </div>
+          <br />
+          <div>
+            <img
+              alt="JustWatch"
+              src="https://www.themoviedb.org/assets/2/v4/logos/justwatch-c2e58adf5809b6871db650fb74b43db2b8f3637fe3709262572553fa056d8d0a.svg"
+              class="center"
+              style={{
+                width: "20vw",
+              }}
+            ></img>
+            <p style={{ width: "20vw", textAlign: "center", margin: 0 }}>
+              Streaming details are found thanks to the JustWatch API (via
+              TMDB).
+            </p>
+          </div>
+        </Container>
       </header>
     </div>
   );

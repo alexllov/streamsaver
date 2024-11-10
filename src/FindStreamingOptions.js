@@ -1,8 +1,6 @@
 import { useState, useEffect, useReducer } from "react";
-import { APIReadKey } from "./keys";
 import Stack from "react-bootstrap/Stack";
 import { Container } from "react-bootstrap";
-var authorization = { Authorization: `Bearer ${APIReadKey}` };
 const country = "GB";
 
 // Called on click, make API call to get exact details of film
@@ -32,15 +30,20 @@ export default function FindStreamingOptions({
         return;
       }
     }
-
-    const url = `//api.themoviedb.org/3/${newItem.contentType}/${newItem.id}/watch/providers`;
-
-    fetch(url, {
+    const middleManUrl =
+      "https://beneficial-cherry-evergreen.glitch.me/findStreamingOptions";
+    const searchUrl = `https://api.themoviedb.org/3/${newItem.contentType}/${newItem.id}/watch/providers`;
+    const headers = {
+      Authorization: "HELLO :)",
+      searchUrl: searchUrl,
+    };
+    fetch(middleManUrl, {
       method: "GET",
-      headers: authorization,
+      headers: headers,
     })
       .then((response) => response.json())
       .then((response) => {
+        console.log("FindStreamingOptions API call made");
         const streamingOptions = response.results[country].flatrate;
         addContentToSelectedContent(newItem, streamingOptions);
       })
@@ -50,17 +53,32 @@ export default function FindStreamingOptions({
   //onClick={() => removeContent(item)}
 
   return (
-    <>
+    <Container
+      style={{
+        width: "80vw",
+      }}
+    >
+      <>
+        <div
+          style={{
+            backgroundColor: "#198754",
+            borderRadius: "0.5rem 0.5rem 0 0",
+          }}
+        >
+          Available Content
+        </div>
+      </>
       <Container
         style={{
-          width: "80vw",
           gap: "1rem",
+          backgroundColor: "#212529",
+          borderRadius: "0 0 0.5rem 0.5rem",
+          paddingTop: "1rem",
         }}
       >
-        <Stack class="mx-auto">
-          <div>Available Conent</div>
+        <Stack className="mx-auto">
           <div
-            key={`Available Conent`}
+            key={`Available Content`}
             style={{
               gap: "1rem",
               display: "flex",
@@ -85,6 +103,6 @@ export default function FindStreamingOptions({
           </div>
         </Stack>
       </Container>
-    </>
+    </Container>
   );
 }

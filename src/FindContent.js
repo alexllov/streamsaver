@@ -1,9 +1,6 @@
 import { useState, useEffect, useReducer } from "react";
-import { APIReadKey } from "./keys";
 import Accordion from "react-bootstrap/Accordion";
 import { Container } from "react-bootstrap";
-
-const authorization = { Authorization: `Bearer ${APIReadKey}` };
 
 //Control the content of foundItems.
 function foundItemsReducer(shows, action) {
@@ -16,6 +13,8 @@ function foundItemsReducer(shows, action) {
           title: action.title,
           posterPath: action.posterPath,
           contentType: action.contentType,
+          justWatchLink: action.justWatchLink,
+          tmdbLink: action.tmdbLink,
         },
       ];
     //Add newly found content into the last array in foundItems (for accordion).
@@ -30,6 +29,8 @@ function foundItemsReducer(shows, action) {
             title: action.title,
             posterPath: action.posterPath,
             contentType: action.contentType,
+            justWatchLink: action.justWatchLink,
+            tmdbLink: action.tmdbLink,
           },
         ],
       ];
@@ -76,13 +77,22 @@ export default function FindContent({
     });
   }
 
-  function addContentToLastArray(id, title, posterPath, contentType) {
+  function addContentToLastArray(
+    id,
+    title,
+    posterPath,
+    contentType,
+    justWatchLink,
+    tmdbLink
+  ) {
     dispatchFoundItems({
       type: "addToLastArray",
       id: id,
       title: title,
       posterPath: posterPath,
       contentType: contentType,
+      justWatchLink: justWatchLink,
+      tmdbLink: tmdbLink,
     });
   }
 
@@ -98,6 +108,26 @@ export default function FindContent({
     return visible;
   }
 
+  function createJustWatchLink(title, contentType, country) {
+    if (country == "GB") {
+      country = "uk";
+    }
+    var searchTitle = title.replace(/:/g, "");
+    searchTitle = searchTitle.replace(/\s+/g, "-");
+    if (contentType == "tv") {
+      contentType = "tv-series";
+    }
+    const path = `https://www.justwatch.com/${country}/${contentType}/${searchTitle}`;
+    return path;
+  }
+
+  function createtmdbLink(id, title, contentType) {
+    var searchTitle = title.replace(/:/g, "");
+    searchTitle = searchTitle.replace(/\s+/g, "-");
+    const path = `https://www.themoviedb.org/${contentType}/${id}-${searchTitle}/watch?language=en-GB`;
+    return path;
+  }
+
   useEffect(() => {
     //Catch if form is empy to prevent API call error.
     if (searchTerm === null) {
@@ -109,16 +139,23 @@ export default function FindContent({
 
     //fetch query, wait for promise to reutrn & convert to Json, wait for that, then do what I want w/ it.
     //For each result returned, record id, title & posterPath.
-    var search_url = `https://api.themoviedb.org/3/search/${filmOrSeries}?query=${searchTerm}&include_adult=${safeSearch}`;
+    const middleManUrl =
+      "https://beneficial-cherry-evergreen.glitch.me/findContent";
+    var searchUrl = `https://api.themoviedb.org/3/search/${filmOrSeries}?query=${searchTerm}&include_adult=${safeSearch}`;
     setSearchedTerms([...searchedTerms, searchTerm]);
-
-    fetch(search_url, {
+    //const headers = [authorization, searchUrl];
+    const headers = {
+      Authorization: "HELLO :)",
+      searchUrl: searchUrl,
+    };
+    fetch(middleManUrl, {
       method: "GET",
-      headers: authorization,
+      headers: headers,
     })
       .then((r) => r.json())
       .then((jsonSearch) => {
         jsonSearch.results.forEach((result) => {
+          console.log("FindContent API call made");
           var id = result.id;
           var title = result.name ? result.name : result.title;
           var posterPath = result.poster_path;
@@ -127,7 +164,20 @@ export default function FindContent({
           } else {
             var contentType = "tv";
           }
-          addContentToLastArray(id, title, posterPath, contentType);
+          const justWatchLink = createJustWatchLink(
+            title,
+            contentType,
+            country
+          );
+          const tmdbLink = createtmdbLink(id, title, contentType);
+          addContentToLastArray(
+            id,
+            title,
+            posterPath,
+            contentType,
+            justWatchLink,
+            tmdbLink
+          );
         });
       });
   }, [searchForm]);
