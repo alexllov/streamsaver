@@ -239,11 +239,14 @@ function App() {
             >
               <p>1. Search for the films & tv shows you want to watch.</p>
               <br />
-              <p>2. Click on something to add it to Selected Content.</p>
+              <p>
+                2. Click on something to select it; if its available to stream
+                it will be added to Available Content.
+              </p>
               <br />
               <p>
                 3. Press the button to find which streaming services you need to
-                acces your content.
+                access your content.
               </p>
             </Container>
           )}
