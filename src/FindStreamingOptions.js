@@ -43,6 +43,7 @@ export default function FindStreamingOptions({
     })
       .then((response) => response.json())
       .then((response) => {
+        console.log("FindStreamingOptions API call made");
         const streamingOptions = response.results[country].flatrate;
         addContentToSelectedContent(newItem, streamingOptions);
       })
@@ -52,17 +53,32 @@ export default function FindStreamingOptions({
   //onClick={() => removeContent(item)}
 
   return (
-    <>
+    <Container
+      style={{
+        width: "80vw",
+      }}
+    >
+      <>
+        <div
+          style={{
+            backgroundColor: "#198754",
+            borderRadius: "0.5rem 0.5rem 0 0",
+          }}
+        >
+          Available Content
+        </div>
+      </>
       <Container
         style={{
-          width: "80vw",
           gap: "1rem",
+          backgroundColor: "#212529",
+          borderRadius: "0 0 0.5rem 0.5rem",
+          paddingTop: "1rem",
         }}
       >
         <Stack className="mx-auto">
-          <div>Available Conent</div>
           <div
-            key={`Available Conent`}
+            key={`Available Content`}
             style={{
               gap: "1rem",
               display: "flex",
@@ -87,6 +103,6 @@ export default function FindStreamingOptions({
           </div>
         </Stack>
       </Container>
-    </>
+    </Container>
   );
 }

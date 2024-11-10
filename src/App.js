@@ -103,6 +103,7 @@ function App() {
   const [resultsLoaded, setResultsLoaded] = useState(false);
 
   //Bool for website instructions
+  const [showInstructions, setShowInstructions] = useState(true);
 
   // form contents
   const [keyTerms, setKeyTerms] = useState("");
@@ -121,6 +122,7 @@ function App() {
     })
       .then((response) => response.json())
       .then((response) => {
+        console.log("PhotoApi call made");
         const baseUrl = response.images.base_url;
         // Need to add an extra detail in here to get both small & larger poster so that can adjust size#
         // Adjusted size taken from 1 -> 3, so they look better @ scale
@@ -135,6 +137,8 @@ function App() {
     e.preventDefault();
     var search = [keyTerms, filmOrSeries, country, safeSearch];
     setSearch(search);
+    setResultsLoaded(false);
+    setShowInstructions(false);
     console.log(`You've Pressed Submit ${search}`);
   }
 
@@ -150,6 +154,8 @@ function App() {
         content="width=device-width, initial-scale=1.0"
       ></meta>
       <header className="App-header">
+        <img src={logo} width="250" style={{ marginTop: 10 }} />
+        <br />
         <Stack gap={"5 rem"}>
           <Container
             style={{
@@ -224,6 +230,23 @@ function App() {
               </div>
             </Form>
           </Container>
+          {showInstructions && (
+            <Container
+              style={{
+                width: "80vw",
+                paddingTop: "1rem",
+              }}
+            >
+              <p>1. Search for the films & tv shows you want to watch.</p>
+              <br />
+              <p>2. Click on something to add it to Selected Content.</p>
+              <br />
+              <p>
+                3. Press the button to find which streaming services you need to
+                acces your content.
+              </p>
+            </Container>
+          )}
           {!resultsLoaded && (
             <FindContent
               searchForm={search}
@@ -298,7 +321,8 @@ function App() {
               }}
             ></img>
             <p style={{ width: "20vw", textAlign: "center", margin: 0 }}>
-              Streaming details found thanks to the JustWatch API (via TMDB).
+              Streaming details are found thanks to the JustWatch API (via
+              TMDB).
             </p>
           </div>
         </Container>
