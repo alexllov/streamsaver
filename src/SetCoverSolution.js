@@ -155,7 +155,7 @@ export default function SetCoverSolution({ selectedContent, photosUrl }) {
 
     setFinalProviders(solution);
   }, []);
-
+  console.log(finalProviders);
   return (
     <>
       <Container
@@ -187,6 +187,44 @@ export default function SetCoverSolution({ selectedContent, photosUrl }) {
                       width={200}
                       //looks @ css flexbox/ padding/ margin for spacing
                     />
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-around",
+                      }}
+                    >
+                      <span>
+                        <a
+                          target="_blank"
+                          data-original="https://www.justwatch.com"
+                          href={item.justWatchLink}
+                          class="center"
+                        >
+                          <img
+                            alt="JustWatch"
+                            src="https://www.themoviedb.org/assets/2/v4/logos/justwatch-c2e58adf5809b6871db650fb74b43db2b8f3637fe3709262572553fa056d8d0a.svg"
+                            class="center"
+                            style={{
+                              height: "11px",
+                            }}
+                          ></img>
+                        </a>
+                      </span>{" "}
+                      <span>
+                        <a
+                          target="_blank"
+                          data-original="https://www.themoviedb.org"
+                          href={item.tmdbLink}
+                        >
+                          <img
+                            src="https://www.themoviedb.org/assets/2/v4/logos/v2/blue_short-8e7b30f73a4020692ccca9c88bafe5dcb6f8a62a4c6bc55cd9ba82bb2cd95f6c.svg"
+                            style={{
+                              height: "11px",
+                            }}
+                          ></img>
+                        </a>
+                      </span>
+                    </div>
                     <p>{item.title}</p>
                   </div>
                 ))}

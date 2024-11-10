@@ -7,6 +7,19 @@
   pointer-events: none;
 }
 
+.button--submit {
+  border-bottom-right-radius: 0;
+  background-color: #282c34;
+}
+
+.button--submit:active {
+  border-bottom-right-radius: 0;
+}
+
+.button--submit:hover {
+  border-bottom-right-radius: 0;
+}
+
 .formSearchBox {
   border: 0;
   background-color: #282c34;
@@ -83,7 +96,7 @@
   cursor: pointer;
   align-items: center;
   justify-content: center;
-  border-radius: 0 0 0.5rem 0.5rem;
+  border-radius: 0 0 0.375rem 0.375rem;
   border: none;
   padding: 0.5rem 0;
   color: #fff;

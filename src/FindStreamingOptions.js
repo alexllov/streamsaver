@@ -1,8 +1,6 @@
 import { useState, useEffect, useReducer } from "react";
-import { APIReadKey } from "./keys";
 import Stack from "react-bootstrap/Stack";
 import { Container } from "react-bootstrap";
-var authorization = { Authorization: `Bearer ${APIReadKey}` };
 const country = "GB";
 
 // Called on click, make API call to get exact details of film
@@ -32,12 +30,16 @@ export default function FindStreamingOptions({
         return;
       }
     }
-
-    const url = `//api.themoviedb.org/3/${newItem.contentType}/${newItem.id}/watch/providers`;
-
-    fetch(url, {
+    const middleManUrl =
+      "https://beneficial-cherry-evergreen.glitch.me/findStreamingOptions";
+    const searchUrl = `https://api.themoviedb.org/3/${newItem.contentType}/${newItem.id}/watch/providers`;
+    const headers = {
+      Authorization: "HELLO :)",
+      searchUrl: searchUrl,
+    };
+    fetch(middleManUrl, {
       method: "GET",
-      headers: authorization,
+      headers: headers,
     })
       .then((response) => response.json())
       .then((response) => {
@@ -57,7 +59,7 @@ export default function FindStreamingOptions({
           gap: "1rem",
         }}
       >
-        <Stack class="mx-auto">
+        <Stack className="mx-auto">
           <div>Available Conent</div>
           <div
             key={`Available Conent`}
