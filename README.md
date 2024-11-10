@@ -1,19 +1,9 @@
 **React web app to find the fewest streaming services needed to access all film/tv content requested by the user.**
 
-Utilizes TMDB's (The Movie Database) API to gather relevant data.
+Available at: https://streamsaverapp.netlify.app/
+
+[![Netlify Status](https://api.netlify.com/api/v1/badges/98c4945e-a93b-4377-894a-e42c2e8caa61/deploy-status)](https://app.netlify.com/sites/streamsaverapp/deploys)
+
+Utilizes TMDB's (The Movie Database) API to find content, and JustWatch (via TMDB) to find streaming details.
 
 This is then processed in line with solutions to the 'set cover optimization problem' (NP-hard) to find the optimal spread of streaming services.
-
-Current State: 
-
-> Form to take user's search terms ✓
-
-> API calls to get film/show basic details ✓
-
-> Search results are selectable and added to selected content ✓
-
-WIP:
-
-> Implementing a solution to the set cover task
-
-> Hiding content to tidy the UI
