@@ -44,7 +44,16 @@ export default function FindStreamingOptions({
       .then((response) => response.json())
       .then((response) => {
         console.log("FindStreamingOptions API call made");
-        const streamingOptions = response.results[country].flatrate;
+        console.log(response);
+        var streamingOptions = [];
+        if (response.results[country].hasOwnProperty("flatrate")) {
+          streamingOptions.push(...response.results[country].flatrate);
+        }
+        if (response.results[country].hasOwnProperty("free")) {
+          const freeOptions = response.results[country].free;
+          streamingOptions.push(...freeOptions);
+        }
+        console.log(streamingOptions);
         addContentToSelectedContent(newItem, streamingOptions);
       })
       .catch((err) => console.error(err));

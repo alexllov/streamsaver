@@ -155,7 +155,6 @@ export default function FindContent({
       .then((r) => r.json())
       .then((jsonSearch) => {
         jsonSearch.results.forEach((result) => {
-          console.log("FindContent API call made");
           var id = result.id;
           var title = result.name ? result.name : result.title;
           var posterPath = result.poster_path;
