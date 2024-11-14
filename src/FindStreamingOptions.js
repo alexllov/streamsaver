@@ -45,15 +45,24 @@ export default function FindStreamingOptions({
       .then((response) => {
         console.log("FindStreamingOptions API call made");
         console.log(response);
-        var streamingOptions = [];
-        if (response.results[country].hasOwnProperty("flatrate")) {
-          streamingOptions.push(...response.results[country].flatrate);
-        }
-        if (response.results[country].hasOwnProperty("free")) {
-          const freeOptions = response.results[country].free;
-          streamingOptions.push(...freeOptions);
-        }
-        console.log(streamingOptions);
+        // var streamingOptions = [];
+        // var streamNames = [];
+        // if (response.results[country].hasOwnProperty("flatrate")) {
+        //   streamingOptions.push(...response.results[country].flatrate);
+        //   streamNames.push(response.results[country].flatrate.provider_name);
+        // }
+        // console.log("Stream names from flatrate", streamNames);
+        // if (response.results[country].hasOwnProperty("free")) {
+        //   const freeOptions = response.results[country].free;
+        //   for (var option in freeOptions) {
+        //     if (!(option.provider_name in streamNames)) {
+        //       streamingOptions.push(...freeOptions);
+        //     }
+        //   }
+        // }
+        const streamingOptions = response.results[country].free
+          ? response.results[country].free
+          : response.results[country].flatrate;
         addContentToSelectedContent(newItem, streamingOptions);
       })
       .catch((err) => console.error(err));
