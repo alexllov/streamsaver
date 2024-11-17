@@ -43,15 +43,12 @@ export default function FindStreamingOptions({
     })
       .then((response) => response.json())
       .then((response) => {
-        console.log("FindStreamingOptions API call made");
-        console.log(response);
         // var streamingOptions = [];
         // var streamNames = [];
         // if (response.results[country].hasOwnProperty("flatrate")) {
         //   streamingOptions.push(...response.results[country].flatrate);
         //   streamNames.push(response.results[country].flatrate.provider_name);
         // }
-        // console.log("Stream names from flatrate", streamNames);
         // if (response.results[country].hasOwnProperty("free")) {
         //   const freeOptions = response.results[country].free;
         //   for (var option in freeOptions) {
@@ -60,6 +57,7 @@ export default function FindStreamingOptions({
         //     }
         //   }
         // }
+        //This throws type error when neitheravailable. Use a try catch to use that to -> notAvailable
         const streamingOptions = response.results[country].free
           ? response.results[country].free
           : response.results[country].flatrate;
@@ -106,7 +104,7 @@ export default function FindStreamingOptions({
           >
             {selectedContent.map((item, index2) => (
               // Lazy & ternary operator, cheat out HTML when 1st is True
-              <div onClick={() => removeContent(item)}>
+              <div onClick={() => removeContent(item)} key={index2}>
                 <img
                   key={item.id}
                   src={photosUrl + item.posterPath}

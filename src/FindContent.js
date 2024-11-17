@@ -206,14 +206,16 @@ export default function FindContent({
                   (item, index2) =>
                     // Lazy & ternary operator, cheat out HTML when 1st is True
                     isVisible(item.id, hiddenItems) && (
-                      <div onClick={() => addHiddenItem(item)}>
+                      <div
+                        onClick={() => addHiddenItem(item)}
+                        key={`${index2}`}
+                      >
                         <img
                           key={item.id}
                           src={photosUrl + item.posterPath}
                           alt={item.title}
                           //Locking width lets use larger posster w/o needing additional call/ storing info
                           width={200}
-                          //looks @ css flexbox/ padding/ margin for spacing
                         />
                         <p>{item.title}</p>
                       </div>
