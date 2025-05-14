@@ -1,10 +1,13 @@
-import { useState, useEffect, useReducer } from "react";
+import { useEffect } from "react";
 import Stack from "react-bootstrap/Stack";
 import { Container } from "react-bootstrap";
 const country = "GB";
 
-// Called on click, make API call to get exact details of film
-// Return an object that contains: name, filmID, bigger poster path, & streaming availability
+/**
+ * Called on click, make API call to get exact details of selected film.
+ * Return an object that contains:
+ * name, filmID, bigger poster path, & streaming availability
+ */
 export default function FindStreamingOptions({
   hiddenItems,
   photosUrl,
@@ -12,19 +15,12 @@ export default function FindStreamingOptions({
   addContentToSelectedContent,
   removeContent,
 }) {
-  //Divide selectedContent into batches of 7 for the rendering to look pretty
-  var sevensOfSelected = [];
-  for (var i = 0; i < selectedContent.length; i += 7) {
-    var batchOfSeven = selectedContent.slice(i, i + 7);
-    sevensOfSelected.push(batchOfSeven);
-  }
-
   const lenHiddenItems = hiddenItems.length;
   const newItem = hiddenItems[lenHiddenItems - 1];
 
-  //Get Streaming Options
+  // Get Streaming Options.
   useEffect(() => {
-    //check if latest item already in selected to avoid dupication
+    // Check if latest item already in selected to avoid dupication.
     for (const item of selectedContent) {
       if (item.id == newItem.id) {
         return;
@@ -43,21 +39,6 @@ export default function FindStreamingOptions({
     })
       .then((response) => response.json())
       .then((response) => {
-        // var streamingOptions = [];
-        // var streamNames = [];
-        // if (response.results[country].hasOwnProperty("flatrate")) {
-        //   streamingOptions.push(...response.results[country].flatrate);
-        //   streamNames.push(response.results[country].flatrate.provider_name);
-        // }
-        // if (response.results[country].hasOwnProperty("free")) {
-        //   const freeOptions = response.results[country].free;
-        //   for (var option in freeOptions) {
-        //     if (!(option.provider_name in streamNames)) {
-        //       streamingOptions.push(...freeOptions);
-        //     }
-        //   }
-        // }
-        //This throws type error when neitheravailable. Use a try catch to use that to -> notAvailable
         const streamingOptions = response.results[country].free
           ? response.results[country].free
           : response.results[country].flatrate;
@@ -65,8 +46,6 @@ export default function FindStreamingOptions({
       })
       .catch((err) => console.error(err));
   }, [hiddenItems]);
-
-  //onClick={() => removeContent(item)}
 
   return (
     <Container
@@ -103,15 +82,12 @@ export default function FindStreamingOptions({
             }}
           >
             {selectedContent.map((item, index2) => (
-              // Lazy & ternary operator, cheat out HTML when 1st is True
               <div onClick={() => removeContent(item)} key={index2}>
                 <img
                   key={item.id}
                   src={photosUrl + item.posterPath}
                   alt={item.title}
-                  //Locking width lets use larger posster w/o needing additional call/ storing info
                   width={200}
-                  //looks @ css flexbox/ padding/ margin for spacing
                 />
                 <p>{item.title}</p>
               </div>

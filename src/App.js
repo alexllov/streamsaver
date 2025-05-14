@@ -6,12 +6,13 @@ import SetCoverSolution from "./SetCoverSolution";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
-import { Container, FloatingLabel, Row } from "react-bootstrap";
+import { Container } from "react-bootstrap";
 import Stack from "react-bootstrap/Stack";
 import "./App.css";
 
 const authorization = { Authorization: "Hello :)" };
 
+// Remove given element from an array.
 function removeElement(element, array) {
   const index = array.indexOf(element);
   if (index > -1) {
@@ -21,6 +22,7 @@ function removeElement(element, array) {
   return array;
 }
 
+// Control content in hiddenItems.
 function hiddenItemsReducer(hiddenItems, action) {
   switch (action.type) {
     case "added":
@@ -33,7 +35,7 @@ function hiddenItemsReducer(hiddenItems, action) {
   }
 }
 
-//Control the content in selectedContent.
+// Control content in selectedContent.
 function selectedContentReducer(selectedContent, action) {
   switch (action.type) {
     case "add":
@@ -47,9 +49,6 @@ function selectedContentReducer(selectedContent, action) {
 }
 
 function App() {
-  //Control the items that are 'Hidden' from search draws, ie content that has been selected.
-  ////Find index of element, splice array around it & return new array
-
   function addHiddenItem(item) {
     dispatchHiddenItems({
       type: "added",
@@ -88,32 +87,35 @@ function App() {
     setResultsLoaded(false);
   }
 
-  // javascript stuff goes here  :)
-  // Country should probably be stored as a separate drop-down & sent to FindStreamingOptions directly,
-  //   its not actually needsd in FindContent, so making it part of the form only complicates things
+  /**
+   * TODO:
+   * Country should be stored as a separate drop-down
+   * to allow cross-country functionality.
+   */
   const [hiddenItems, dispatchHiddenItems] = useReducer(hiddenItemsReducer, []);
   const [selectedContent, dispatchSelectedContent] = useReducer(
     selectedContentReducer,
     []
   );
-  //Url for photos from API call
+
+  // Url for photos from API call.
   const [photosUrl, setphotosUrl] = useState("");
 
-  //Bool for search results button
+  // Bool for search results button.
   const [resultsLoaded, setResultsLoaded] = useState(false);
 
-  //Bool for website instructions
+  // Bool for website instructions.
   const [showInstructions, setShowInstructions] = useState(true);
 
-  // form contents
+  // Form contents.
   const [keyTerms, setKeyTerms] = useState("");
   const [filmOrSeries, setFilmOrSeries] = useState("tv");
   const [country, setCountry] = useState("GB");
   const [safeSearch, setSafeSearch] = useState(false);
   const [search, setSearch] = useState([null, null, null, null]);
 
+  // Get img pathway config details.
   useEffect(() => {
-    //Get img pathway config details
     const middleManUrl =
       "https://beneficial-cherry-evergreen.glitch.me/photoUrl";
     fetch(middleManUrl, {
@@ -124,8 +126,10 @@ function App() {
       .then((response) => {
         console.log("PhotoApi call made");
         const baseUrl = response.images.base_url;
-        // Need to add an extra detail in here to get both small & larger poster so that can adjust size#
-        // Adjusted size taken from 1 -> 3, so they look better @ scale
+        /**
+         * Adjusted size taken from 1 -> 3, so they look better at scale.
+         * Consider grabbing multiple for scaling in different places.
+         */
         const pixelSize = response.images.poster_sizes[3];
 
         setphotosUrl(`${baseUrl}${pixelSize}`);
@@ -133,6 +137,7 @@ function App() {
       .catch((err) => console.error(err));
   }, []);
 
+  // Form submission.
   function handleSubmit(e) {
     e.preventDefault();
     var search = [keyTerms, filmOrSeries, country, safeSearch];
@@ -146,7 +151,7 @@ function App() {
     e.preventDefault();
     setResultsLoaded(true);
   }
-  //<img src={logo} className="App-logo" alt="logo" />
+
   return (
     <div className="App">
       <meta

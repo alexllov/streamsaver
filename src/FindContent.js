@@ -2,7 +2,7 @@ import { useState, useEffect, useReducer } from "react";
 import Accordion from "react-bootstrap/Accordion";
 import { Container } from "react-bootstrap";
 
-//Control the content of foundItems.
+// Control the content of foundItems.
 function foundItemsReducer(shows, action) {
   switch (action.type) {
     case "added":
@@ -17,7 +17,8 @@ function foundItemsReducer(shows, action) {
           tmdbLink: action.tmdbLink,
         },
       ];
-    //Add newly found content into the last array in foundItems (for accordion).
+
+    // Add new found content into the last array in foundItems (for accordion).
     case "addToLastArray":
       var lastArray = shows[shows.length - 1];
       return [
@@ -34,7 +35,8 @@ function foundItemsReducer(shows, action) {
           },
         ],
       ];
-    //Spread shows, add new array to end, for next section of accordion.
+
+    // Spread shows, add new array to end, for next section of accordion.
     case "addArray":
       return [...shows, []];
     default: {
@@ -43,33 +45,23 @@ function foundItemsReducer(shows, action) {
   }
 }
 
+// Takes form inputs, returns the first page of results from API.
 export default function FindContent({
   searchForm,
   hiddenItems,
   addHiddenItem,
   photosUrl,
 }) {
-  //useReducer to track hiddenContent
-  //Content returned from API after form search
+  // Content returned from API after form search.
   const [foundItems, dispatchFoundItems] = useReducer(foundItemsReducer, []);
 
-  //Stores search terms used by the user to name accordion sections
+  // Stores search terms used by the user to name accordion sections.
   const [searchedTerms, setSearchedTerms] = useState([]);
-  //
 
   const searchTerm = searchForm[0];
   const filmOrSeries = searchForm[1];
   const country = searchForm[2];
   const safeSearch = searchForm[3];
-
-  //  function addContent(id, title, posterPath) {
-  //    dispatchFoundItems({
-  //      type: "added",
-  //      id: id,
-  //      title: title,
-  //      posterPath: posterPath,
-  //    });
-  //  }
 
   function addNewContentArray() {
     dispatchFoundItems({
@@ -96,7 +88,10 @@ export default function FindContent({
     });
   }
 
-  //Check if content is visible: iterate through the IDs in hiddenItemIds to look for a match.
+  /**
+   * Check if content is visible:
+   * iterate through the IDs in hiddenItemIds to look for a match.
+   */
   function isVisible(id, hiddenItems) {
     var visible = true;
     hiddenItems.forEach((item) => {
@@ -108,6 +103,7 @@ export default function FindContent({
     return visible;
   }
 
+  // Generate JustWatch link from query reult.
   function createJustWatchLink(title, contentType, country) {
     if (country == "GB") {
       country = "uk";
@@ -121,6 +117,7 @@ export default function FindContent({
     return path;
   }
 
+  // Generate TMDB link from query reult.
   function createtmdbLink(id, title, contentType) {
     var searchTitle = title.replace(/:/g, "");
     searchTitle = searchTitle.replace(/\s+/g, "-");
@@ -128,8 +125,8 @@ export default function FindContent({
     return path;
   }
 
+  //Catch if form is empy to prevent API call error.
   useEffect(() => {
-    //Catch if form is empy to prevent API call error.
     if (searchTerm === null) {
       return;
     }
@@ -137,17 +134,20 @@ export default function FindContent({
     //Search Results stored as 2D array so that they display in the accordion.
     addNewContentArray();
 
-    //fetch query, wait for promise to reutrn & convert to Json, wait for that, then do what I want w/ it.
-    //For each result returned, record id, title & posterPath.
+    /**
+     * Fetch query, for each result returned record:
+     * id, title, posterPath, content type, JustWatch & TMDB links.
+     */
     const middleManUrl =
       "https://beneficial-cherry-evergreen.glitch.me/findContent";
     var searchUrl = `https://api.themoviedb.org/3/search/${filmOrSeries}?query=${searchTerm}&include_adult=${safeSearch}`;
     setSearchedTerms([...searchedTerms, searchTerm]);
-    //const headers = [authorization, searchUrl];
+
     const headers = {
       Authorization: "HELLO :)",
       searchUrl: searchUrl,
     };
+
     fetch(middleManUrl, {
       method: "GET",
       headers: headers,
@@ -204,7 +204,7 @@ export default function FindContent({
               >
                 {itemArray.map(
                   (item, index2) =>
-                    // Lazy & ternary operator, cheat out HTML when 1st is True
+                    // Lazy & ternary operator cheat out HTML when 1st is True.
                     isVisible(item.id, hiddenItems) && (
                       <div
                         onClick={() => addHiddenItem(item)}
@@ -214,7 +214,7 @@ export default function FindContent({
                           key={item.id}
                           src={photosUrl + item.posterPath}
                           alt={item.title}
-                          //Locking width lets use larger posster w/o needing additional call/ storing info
+                          // Locking width lets use larger posster w/o needing additional call/ storing info.
                           width={200}
                         />
                         <p>{item.title}</p>
