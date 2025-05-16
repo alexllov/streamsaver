@@ -253,6 +253,10 @@ function App() {
                 3. Press the button to find which streaming services you need to
                 access your content.
               </p>
+              <p>
+                Click the TMBD or JustWatch logos below a result to be
+                redirected for extra information.
+              </p>
             </Container>
           )}
           {!resultsLoaded && (
@@ -280,7 +284,7 @@ function App() {
               }}
             >
               <Button variant="success" onClick={handleClick}>
-                Click Me
+                Click here for streaming details
               </Button>
             </Container>
           )}
